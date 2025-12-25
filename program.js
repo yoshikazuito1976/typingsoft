@@ -13,6 +13,7 @@ let tmpList = [];         //mondailistの1つの問題を代入する配列
 let endWord = "";         //入力後の文字を残しておく変数
 let buf = "";             //入力中の文字を残しておく変数
 let preWord = "";         //入力前の文字を残しておく変数
+let missLock = false;     //ミス後の入力ロック（正解キー以外は無視）
 let total = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []];   //全ての練習記録を残しておく2重配列
 
 //全アスキーコードに対応するLeft位置とTop位置のリスト
@@ -271,120 +272,146 @@ function lessonStart() {
 //⑧キー入力を監視するためのイベントリスナーを追加
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 document.addEventListener('keydown', function (event) {
-    let asciiCode = event.key.charCodeAt(0);
+    // Tabはブラウザのフォーカス移動を止める
     if (event.key === "Tab") {
-        event.preventDefault(); // Tabキーのデフォルト動作を無効にする
+        event.preventDefault();
+        return;
     }
-    else if (startFlg) {
-        //エスケイプキーを押した時の処理----------------------------------------
-        if (event.key == "Escape" && event.code == "Escape") {
-            lessonStop();
-        }
-        // 全角半角キーを押した場合の処理---------------------------------------
-        else if (event.code === "Backquote") {
-        }
-        //CapsLockキーを押した場合の処理----------------------------------------
-        else if (event.key == "Alphanumeric" && event.code == "CapsLock") {
-        }
-        //シフトキーを押した時の処理
-        else if (event.shiftKey && asciiCode == 83) {
-        }
-        //コントロールキーを押した場合の処理------------------------------------
-        else if (event.ctrlKey) {
-        }
-        //バックスペースキーを押した時の処理------------------------------------
-        else if (event.key == "Backspace" && event.code == "Backspace") {
-            if (buf.length > 0) {
-                buf = buf.slice(0, -1);                                 //文字列から末尾の1文字を削除
-                document.querySelector(".inputBuf").textContent = buf;  //削除した文字列を表示
-                //BSでbufを削除して、文字数が0文字になったら、
-                if (buf.length == 0) {
-                    preInputView(tmpWord);
-                }
-                document.querySelector(".miss").style.display = "none";
-            }
-        }
-        //エンターキーを押した場合の処理-----------------------------------------
-        else if (event.code === "Enter") {
-        }
-        //それ以外のキーを押した場合の処理----------------------------------------
-        else {
-            inputStr = String.fromCharCode(asciiCode).toUpperCase();
-            questStr = tmpWord.slice(0, 1);
 
-            buf += inputStr;
-            document.querySelector(".inputBuf").textContent = buf;
-            correct = false;
-            //「バッファの最後の文字」と「入力予定文字の先頭の文字」が同じだったら
-            if (buf.slice(-1) == preWord.slice(0, 1)) {
-                preWord = preWord.slice(1);                                    //文字列から先頭の文字を削除
-                document.querySelector(".inputBefore").textContent = preWord;  //削除後の文字を表示
-                //入力予定文字がまだ1文字以上残っていたら、次の文字のキーを表示
-                if (preWord.length > 0) {
-                    changeColor(preWord.slice(0, 1));
-                    correct = true;
-                }
-            }
-
-            flag = false;
-            for (i = 0; i < kana.length; i++) {
-                //通常のローマ字判定
-                if (kana[i] == tmpWord.slice(0, kana[i].length) && roma[i] == buf) {
-                    tmpWord = tmpWord.slice(kana[i].length);
-                    document.querySelector(".msgStr").textContent = tmpWord;
-                    countStr += kana[i].length;
-
-                    flag = true;
-                    break;
-                }
-                //促音「っ」がある時のローマ字判定
-                else if ("っ" + kana[i] == tmpWord.slice(0, kana[i].length + 1) && roma[i][0] + roma[i] == buf) {
-                    tmpWord = tmpWord.slice(kana[i].length + 1);
-                    document.querySelector(".msgStr").textContent = tmpWord;
-                    countStr += kana[i].length + 1;
-
-                    flag = true;
-                    break;
-                }
-            }
-            //文字が一致したら
-            if (flag == true) {
-                document.querySelector(".miss").style.display = "none";
-
-                correct = true;
-                //キーバッファを打ち終わった文字に移す--------------
-                endWord += buf;
-                document.querySelector(".inputAfter").textContent = endWord;
-                //キーバッファをクリア-------------------------------
-                buf = "";
-                document.querySelector(".inputBuf").textContent = buf;
-                document.querySelector(".score2").textContent = `${countStr} 文字`;
-                //1単語打ち終わった後の処理
-                if (tmpWord.length == 0) {
-                    countWord++;
-                    document.querySelector(".score3").textContent = `${countWord} ワード`;
-                    NextWordView();
-                }
-                preInputView(tmpWord);
-            }
-            //ミスキー入力だったら
-            if (correct == false) {
-                console.log("miss");
-                countMiss++;
-                document.querySelector(".score4").textContent = `${countMiss} 回`;
-                missColor(inputStr);
-                console.log(inputStr);
-            }
-        }
-    }
-    else {
-        //スペースキーを押して練習開始
-        if (asciiCode == 32) {
+    // startFlg=falseのときはSpaceで開始
+    if (!startFlg) {
+        if (event.key === " ") {   // Spaceは " " が安全
             lessonStart();
         }
+        return;
+    }
+
+    // ここから startFlg=true（練習中）
+
+    // Escapeで停止
+    if (event.key === "Escape" && event.code === "Escape") {
+        lessonStop();
+        return;
+    }
+
+    // 全角半角/変換系など無視
+    if (event.code === "Backquote") return;
+    if (event.code === "CapsLock") return;
+
+    // Ctrl系ショートカットは無視
+    if (event.ctrlKey) return;
+
+    // Backspace
+    if (event.key === "Backspace" && event.code === "Backspace") {
+        if (buf.length > 0) {
+            buf = buf.slice(0, -1);
+            document.querySelector(".inputBuf").textContent = buf;
+
+            if (buf.length === 0) {
+                preInputView(tmpWord);
+            }
+            document.querySelector(".miss").style.display = "none";
+        }
+        return;
+    }
+
+    // Enter は現状何もしない
+    if (event.code === "Enter") {
+        return;
+    }
+
+    // ===== ここが本題：正解文字のみ受け付ける =====
+    // 文字キー以外（Arrow/F1など）は無視
+    if (!event.key || event.key.length !== 1) {
+        return;
+    }
+
+    const inputStr = event.key.toUpperCase();
+
+    // 次に打つべき1文字（正解）
+    const expected = preWord.slice(0, 1).toUpperCase();
+    if (expected.length === 0) {
+        return;
+    }
+
+   // すでにミスロック中なら、正解以外は無視（連打でmiss回数が増えないようにする）
+    if (missLock && inputStr !== expected) {
+        return;
+    }
+
+    // ミス：bufに入れず、ロックする（正解待ち状態へ）
+    if (inputStr !== expected) {
+        missLock = true;
+
+        countMiss++;
+        document.querySelector(".score4").textContent = `${countMiss} 回`;
+
+        const code = inputStr.charCodeAt(0);
+        if (code >= 0 && code < posi.length) {
+            missColor(inputStr);
+        }
+        return;
+    }
+
+    // 正解：bufへ入れる
+    missLock = false;                 // 正解が来たらロック解除
+    document.querySelector(".miss").style.display = "none";  // 赤表示も消す
+
+    buf += inputStr;
+    document.querySelector(".inputBuf").textContent = buf;
+
+    // preWordを1文字進める＆次のキーを表示
+    preWord = preWord.slice(1);
+    document.querySelector(".inputBefore").textContent = preWord;
+    if (preWord.length > 0) {
+        changeColor(preWord.slice(0, 1));
+    }
+
+    // ここから既存の「kana/roma一致」判定に流す
+    let matched = false;
+
+    for (let i = 0; i < kana.length; i++) {
+        // 通常
+        if (kana[i] == tmpWord.slice(0, kana[i].length) && roma[i] == buf) {
+            tmpWord = tmpWord.slice(kana[i].length);
+            document.querySelector(".msgStr").textContent = tmpWord;
+            countStr += kana[i].length;
+
+            matched = true;
+            break;
+        }
+        // 促音「っ」
+        if ("っ" + kana[i] == tmpWord.slice(0, kana[i].length + 1) && (roma[i][0] + roma[i]) == buf) {
+            tmpWord = tmpWord.slice(kana[i].length + 1);
+            document.querySelector(".msgStr").textContent = tmpWord;
+            countStr += kana[i].length + 1;
+
+            matched = true;
+            break;
+        }
+    }
+
+    if (matched) {
+        document.querySelector(".miss").style.display = "none";
+
+        endWord += buf;
+        document.querySelector(".inputAfter").textContent = endWord;
+
+        buf = "";
+        document.querySelector(".inputBuf").textContent = buf;
+
+        document.querySelector(".score2").textContent = `${countStr} 文字`;
+
+        if (tmpWord.length === 0) {
+            countWord++;
+            document.querySelector(".score3").textContent = `${countWord} ワード`;
+            NextWordView();
+        }
+
+        // 次のpreWord（残りのtmpWordに対応）を再表示
+        preInputView(tmpWord);
     }
 });
-
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 //関数外処理
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
