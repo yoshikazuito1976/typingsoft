@@ -336,6 +336,12 @@ document.addEventListener('keydown', function (event) {
 
    // すでにミスロック中なら、正解以外は無視（連打でmiss回数が増えないようにする）
     if (missLock && inputStr !== expected) {
+        countMiss++;
+        document.querySelector(".score4").textContent = `${countMiss} 回`;
+
+        // 見た目のミス演出が必要なら（元からある関数に合わせて）
+        missColor(inputStr);
+        
         return;
     }
 
