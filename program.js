@@ -122,10 +122,14 @@ function missColor(key) {
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 //⑥次のワードを表示
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+function removePunctuation(str) {
+    return str.replace(/[、。,.]/g, "");
+    }
+
 function NextWordView() {
     //登録順に表示----------------------------------------------------
     if (order) {
-        tmpWord = tmpList[r];
+        tmpWord = removePunctuation(tmpList[r]);
         document.querySelector(".msgStr").textContent = tmpWord;
         r++;
         if (r >= tmpList.length) {
@@ -135,7 +139,7 @@ function NextWordView() {
     //ランダムで表示--------------------------------------------------
     else {
         r = Math.floor(Math.random() * tmpList.length);   //乱数を求める
-        tmpWord = tmpList[r];                             //配列から1件抜出し変数に代入
+        tmpWord = removePunctuation(tmpList[r]);                           //配列から1件抜出し変数に代入
         tmpList.splice(r, 1);                             //代入したデータを配列から削除
 
         //配列にデータが1件もなくなったら
