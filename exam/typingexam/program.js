@@ -13,33 +13,30 @@ let tmpList = [];         //mondailistの1つの問題を代入する配列
 let endWord = "";         //入力後の文字を残しておく変数
 let buf = "";             //入力中の文字を残しておく変数
 let preWord = "";         //入力前の文字を残しておく変数
-let missLock = false;     //ミス後の入力ロック（正解キー以外は無視）
 let total = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []];   //全ての練習記録を残しておく2重配列
 
 //全アスキーコードに対応するLeft位置とTop位置のリスト
 let posi = [
-    [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],
-    [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],
-    [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],
+    [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],    //アスキーコード0～9
+    [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],    //アスキーコード10～19
+    [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],    //アスキーコード20～29
     [0, 0], [0, 0], [428, 480],
     [84, 223], [150, 223], [216, 223], [282, 223], [348, 223], [414, 223], [480, 223], [546, 223], [612, 223],//!"#$%&'()
     [814, 353], [748, 353], [651, 418], [744, 223], [717, 418], [783, 418],                                    //*+,-./
-    [678, 223], [84, 223], [150, 223], [216, 223], [282, 223], [348, 223], [414, 223], [480, 223], [546, 223], [612, 223],//0123456789
+    [678, 223], [84, 223], [150, 223], [216, 223], [282, 223], [348, 223], [414, 223], [480, 223], [546, 223], [612, 223],//アスキーコード48～57（0123456789）
     [814, 353], [748, 353], [651, 418], [744, 223], [717, 418], [783, 418], [779, 288],
-    [154, 353], [453, 418], [321, 418], [286, 353], [251, 288], [352, 353], [418, 353], [484, 353], [581, 288], [550, 353], [616, 353], [682, 353], [585, 418], [519, 418], [647, 288], [713, 288], [119, 288], [317, 288], [220, 353], [383, 288], [515, 288], [387, 418], [185, 288], [255, 418], [449, 288], [189, 418],
+    [154, 353], [453, 418], [321, 418], [286, 353], [251, 288], [352, 353], [418, 353], [484, 353], [581, 288], [550, 353], [616, 353], [682, 353], [585, 418], [519, 418], [647, 288], [713, 288], [119, 288], [317, 288], [220, 353], [383, 288], [515, 288], [387, 418], [185, 288], [255, 418], [449, 288], [189, 418],//アスキーコード65～90（A～Z）
     [845, 288], [876, 223], [880, 353], [810, 223], [849, 418], [779, 288],
-    [154, 353], [453, 418], [321, 418], [286, 353], [251, 288], [352, 353], [418, 353], [484, 353], [581, 288], [550, 353], [616, 353], [682, 353], [585, 418], [519, 418], [647, 288], [713, 288], [119, 288], [317, 288], [220, 353], [383, 288], [515, 288], [387, 418], [185, 288], [255, 418], [449, 288], [189, 418],
+    [154, 353], [453, 418], [321, 418], [286, 353], [251, 288], [352, 353], [418, 353], [484, 353], [581, 288], [550, 353], [616, 353], [682, 353], [585, 418], [519, 418], [647, 288], [713, 288], [119, 288], [317, 288], [220, 353], [383, 288], [515, 288], [387, 418], [185, 288], [255, 418], [449, 288], [189, 418],//アスキーコード97～122（a～z）
     [845, 288], [876, 223], [880, 353], [810, 223],
 ];
 
 
-
+//問題の配列の先頭の文字を抜き出し、タイトルにするための配列を作る
 titleStr = [];
-for (i = 0; i <= 9; i++) {
+for (i = 0; i < Math.min(mondailist.length, 10); i++) {
     titleStr[i] = mondailist[i][0];
 }
-
-
 
 //ローマ字カナ対応表を1つの1次元配列で作り、それを2つの配列に分離している。
 //これはのちのにデータの管理がやりやすくするため
@@ -123,14 +120,10 @@ function missColor(key) {
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 //⑥次のワードを表示
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-function removePunctuation(str) {
-    return str.replace(/[、。,.]/g, "");
-    }
-
 function NextWordView() {
     //登録順に表示----------------------------------------------------
     if (order) {
-        tmpWord = removePunctuation(tmpList[r]);
+        tmpWord = tmpList[r];
         document.querySelector(".msgStr").textContent = tmpWord;
         r++;
         if (r >= tmpList.length) {
@@ -140,7 +133,7 @@ function NextWordView() {
     //ランダムで表示--------------------------------------------------
     else {
         r = Math.floor(Math.random() * tmpList.length);   //乱数を求める
-        tmpWord = removePunctuation(tmpList[r]);                           //配列から1件抜出し変数に代入
+        tmpWord = tmpList[r];                             //配列から1件抜出し変数に代入
         tmpList.splice(r, 1);                             //代入したデータを配列から削除
 
         //配列にデータが1件もなくなったら
@@ -230,9 +223,9 @@ function lessonStart() {
                 no = lessonNo;
                 //記録を保存
                 total[no][total[no].length] = Math.floor(600 * countStr / count) / 10;
-                //記録を表示
+                //画面上に記録を表示
                 document.querySelector(".msgStr").textContent = Math.floor(600 * countStr / count) / 10;
-                //記録の単位を表示
+                //画面上に記録の単位を表示
                 document.querySelector(".unit").textContent = "文字/分";
 
                 //「文字/分」という単位を結果表示のスコアのちょうど右側に表示する処理----------------------
@@ -242,14 +235,13 @@ function lessonStart() {
                 textElement.style.left = (900 - textWidth) / 2 + 'px';
                 textElement.style.width = textWidth + 'px';
 
-                unitElement = document.querySelector(".unit");
                 a = parseInt(textElement.style.left.slice(0, textElement.style.left.length - 2));
                 b = parseInt(textElement.style.width.slice(0, textElement.style.width.length - 2));
                 c = a + b + 10;
-                unitElement.style.left = c + 'px';
+                document.querySelector(".unit").style.left = c + 'px';
 
                 //記録のソート----------------------------------------------
-                for (j = 0; j < 10; j++) {
+                for (j = 0; j < total[no].length; j++) {
                     for (i = 0; i < total[no].length; i++) {
                         if (total[no][i] < total[no][j]) {
                             [total[no][i], total[no][j]] = [total[no][j], total[no][i]];
@@ -257,7 +249,7 @@ function lessonStart() {
                     }
                 }
                 //記録の書き込み---------------------------------------------------
-                if (no <= 9) {
+                if (no < Math.min(mondailist.length, 10)) {
                     str = "";
                     for (i = 0; i < Math.min(total[no].length, 10); i++) {
                         str += `${i + 1}: ${total[no][i]} <span>文字/分</span><br>`;
@@ -276,157 +268,125 @@ function lessonStart() {
 //⑧キー入力を監視するためのイベントリスナーを追加
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 document.addEventListener('keydown', function (event) {
-    // Tabはブラウザのフォーカス移動を止める
+    //アスキーコードを取得
+    let asciiCode = event.key.charCodeAt(0);
     if (event.key === "Tab") {
-        event.preventDefault();
-        return;
+        event.preventDefault(); // Tabキーのデフォルト動作を無効にする
     }
-
-    // startFlg=falseのときはSpaceで開始
-    if (!startFlg) {
-        if (event.key === " ") {   // Spaceは " " が安全
-            lessonStart();
+    else if (startFlg) {
+        //エスケイプキーを押した時の処理----------------------------------------
+        if (event.key == "Escape" && event.code == "Escape") {
+            lessonStop();
         }
-        return;
-    }
+        // 全角半角キーを押した場合の処理---------------------------------------
+        else if (event.code === "Backquote") {
+        }
+        //CapsLockキーを押した場合の処理----------------------------------------
+        else if (event.key == "Alphanumeric" && event.code == "CapsLock") {
+        }
+        //シフトキーを押した時の処理
+        else if (event.shiftKey && asciiCode == 83) {
+        }
+        //コントロールキーを押した場合の処理------------------------------------
+        else if (event.ctrlKey) {
+        }
+        //バックスペースキーを押した時の処理------------------------------------
+        else if (event.key == "Backspace" && event.code == "Backspace") {
+            if (buf.length > 0) {
+                buf = buf.slice(0, -1);                                 //文字列から末尾の1文字を削除
+                document.querySelector(".inputBuf").textContent = buf;  //削除した文字列を表示
+                //BSでbufを削除して、文字数が0文字になったら、
+                if (buf.length == 0) {
+                    preInputView(tmpWord);
+                }
+                document.querySelector(".miss").style.display = "none";
+            }
+        }
+        //エンターキーを押した場合の処理-----------------------------------------
+        else if (event.code === "Enter") {
+        }
+        //それ以外のキーを押した場合の処理----------------------------------------
+        else {
+            inputStr = String.fromCharCode(asciiCode).toUpperCase();
+            questStr = tmpWord.slice(0, 1);
 
-    // ここから startFlg=true（練習中）
-
-    // Escapeで停止
-    if (event.key === "Escape" && event.code === "Escape") {
-        lessonStop();
-        return;
-    }
-
-    // 全角半角/変換系など無視
-    if (event.code === "Backquote") return;
-    if (event.code === "CapsLock") return;
-
-    // Ctrl系ショートカットは無視
-    if (event.ctrlKey) return;
-
-    // Backspace
-    if (event.key === "Backspace" && event.code === "Backspace") {
-        if (buf.length > 0) {
-            buf = buf.slice(0, -1);
+            buf += inputStr;
             document.querySelector(".inputBuf").textContent = buf;
+            correct = false;
+            //「バッファの最後の文字」と「入力予定文字の先頭の文字」が同じだったら
+            if (buf.slice(-1) == preWord.slice(0, 1)) {
+                preWord = preWord.slice(1);                                    //文字列から先頭の文字を削除
+                document.querySelector(".inputBefore").textContent = preWord;  //削除後の文字を表示
+                //入力予定文字がまだ1文字以上残っていたら、次の文字のキーを表示
+                if (preWord.length > 0) {
+                    changeColor(preWord.slice(0, 1));
+                    correct = true;
+                }
+            }
 
-            if (buf.length === 0) {
+            flag = false;   //文字が一致したか、ミスかの判定の初期値を設定
+            for (i = 0; i < kana.length; i++) {
+                //通常のローマ字判定
+                if (kana[i] == tmpWord.slice(0, kana[i].length) && roma[i] == buf) {
+                    tmpWord = tmpWord.slice(kana[i].length);
+                    document.querySelector(".msgStr").textContent = tmpWord;
+                    countStr += kana[i].length;
+
+                    flag = true;   //文字が一致して、ミスがなかった判定
+                    break;
+                }
+                //促音「っ」がある時のローマ字判定
+                else if ("っ" + kana[i] == tmpWord.slice(0, kana[i].length + 1) && roma[i][0] + roma[i] == buf) {
+                    tmpWord = tmpWord.slice(kana[i].length + 1);
+                    document.querySelector(".msgStr").textContent = tmpWord;
+                    countStr += kana[i].length + 1;
+
+                    flag = true;   //文字が一致して、ミスがなかった判定
+                    break;
+                }
+            }
+            //文字が一致したら
+            if (flag == true) {
+                //ミスの赤いキーを非表示にする
+                document.querySelector(".miss").style.display = "none";
+
+                correct = true;
+                //キーバッファを打ち終わった文字に移す--------------
+                endWord += buf;
+                document.querySelector(".inputAfter").textContent = endWord;
+                //キーバッファをクリア-------------------------------
+                buf = "";
+                document.querySelector(".inputBuf").textContent = buf;
+                document.querySelector(".score2").textContent = `${countStr} 文字`;
+                //1単語打ち終わった後の処理
+                if (tmpWord.length == 0) {
+                    countWord++;
+                    document.querySelector(".score3").textContent = `${countWord} ワード`;
+                    NextWordView();
+                }
                 preInputView(tmpWord);
             }
-            document.querySelector(".miss").style.display = "none";
-        }
-        return;
-    }
-
-    // Enter は現状何もしない
-    if (event.code === "Enter") {
-        return;
-    }
-
-    // ===== ここが本題：正解文字のみ受け付ける =====
-    // 文字キー以外（Arrow/F1など）は無視
-    if (!event.key || event.key.length !== 1) {
-        return;
-    }
-
-    const inputStr = event.key.toUpperCase();
-
-    // 次に打つべき1文字（正解）
-    const expected = preWord.slice(0, 1).toUpperCase();
-    if (expected.length === 0) {
-        return;
-    }
-
-   // すでにミスロック中なら、正解以外は無視（連打でmiss回数が増えないようにする）
-    if (missLock && inputStr !== expected) {
-        countMiss++;
-        document.querySelector(".score4").textContent = `${countMiss} 回`;
-
-        // 見た目のミス演出が必要なら（元からある関数に合わせて）
-        missColor(inputStr);
-        
-        return;
-    }
-
-    // ミス：bufに入れず、ロックする（正解待ち状態へ）
-    if (inputStr !== expected) {
-        missLock = true;
-
-        countMiss++;
-        document.querySelector(".score4").textContent = `${countMiss} 回`;
-
-        const code = inputStr.charCodeAt(0);
-        if (code >= 0 && code < posi.length) {
-            missColor(inputStr);
-        }
-        return;
-    }
-
-    // 正解：bufへ入れる
-    missLock = false;                 // 正解が来たらロック解除
-    document.querySelector(".miss").style.display = "none";  // 赤表示も消す
-
-    buf += inputStr;
-    document.querySelector(".inputBuf").textContent = buf;
-
-    // preWordを1文字進める＆次のキーを表示
-    preWord = preWord.slice(1);
-    document.querySelector(".inputBefore").textContent = preWord;
-    if (preWord.length > 0) {
-        changeColor(preWord.slice(0, 1));
-    }
-
-    // ここから既存の「kana/roma一致」判定に流す
-    let matched = false;
-
-    for (let i = 0; i < kana.length; i++) {
-        // 通常
-        if (kana[i] == tmpWord.slice(0, kana[i].length) && roma[i] == buf) {
-            tmpWord = tmpWord.slice(kana[i].length);
-            document.querySelector(".msgStr").textContent = tmpWord;
-            countStr += kana[i].length;
-
-            matched = true;
-            break;
-        }
-        // 促音「っ」
-        if ("っ" + kana[i] == tmpWord.slice(0, kana[i].length + 1) && (roma[i][0] + roma[i]) == buf) {
-            tmpWord = tmpWord.slice(kana[i].length + 1);
-            document.querySelector(".msgStr").textContent = tmpWord;
-            countStr += kana[i].length + 1;
-
-            matched = true;
-            break;
+            //ミスキー入力だったら
+            if (correct == false) {
+                countMiss++;
+                document.querySelector(".score4").textContent = `${countMiss} 回`;
+                missColor(inputStr);
+            }
         }
     }
-
-    if (matched) {
-        document.querySelector(".miss").style.display = "none";
-
-        endWord += buf;
-        document.querySelector(".inputAfter").textContent = endWord;
-
-        buf = "";
-        document.querySelector(".inputBuf").textContent = buf;
-
-        document.querySelector(".score2").textContent = `${countStr} 文字`;
-
-        if (tmpWord.length === 0) {
-            countWord++;
-            document.querySelector(".score3").textContent = `${countWord} ワード`;
-            NextWordView();
+    else {
+        //スペースキーを押して練習開始
+        if (asciiCode == 32) {
+            lessonStart();
         }
-
-        // 次のpreWord（残りのtmpWordに対応）を再表示
-        preInputView(tmpWord);
     }
 });
+
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 //関数外処理
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
-for (i = 0; i <= 9; i++) {
+for (i = 0; i < Math.min(mondailist.length, 10); i++) {
     document.querySelector(".title" + i).innerHTML = `${titleStr[i]}(0)`;
 }
 
