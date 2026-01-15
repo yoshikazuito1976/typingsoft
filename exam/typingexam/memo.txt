@@ -1,0 +1,81 @@
+最後の文字
+buf.slice(-1)
+
+先頭の文字
+buf.slice(0, 1)
+
+先頭の文字を削除した文字（0文字目を削除し1文字目から）
+buf.slice(1)
+
+最後の文字だけを削除する
+buf.slice(0, -1);
+
+----------------------------------------------------------------------------
+
+
+var character = 'A'; // アスキーコードに変換したい文字
+var asciiCode = character.charCodeAt(0);
+console.log(asciiCode); // 出力は 65 となります
+
+
+var asciiCode = 65; // 変換したいアスキーコードの数値
+var character = String.fromCharCode(asciiCode);
+console.log(character); // 出力は "A" となります
+
+
+
+        let tmpList = [...wordlist];
+
+
+        document.querySelector(".hit").style.display = "none";
+            document.querySelector(".hit").style.display = "block";
+
+
+            spaceElement = document.querySelector(".space");
+            spaceElement.textContent = "push Start";
+            spaceElement.style.backgroundColor = "yellow";
+            document.querySelector(".msg").textContent = '';
+
+
+            // document.querySelector(".score5").textContent = `30 終了`;
+
+
+            var element = document.querySelector('.k' + keyCode);
+
+
+                document.querySelector(".msg").textContent = nextstr;
+
+
+        str="";
+        for (i = 0; i < kana.length; i++) {
+            console.log(kana[i] + "--" + roma[i]);
+            str+=`["${kana[i]}","${roma[i]}"],<br>`;
+        }
+        document.querySelector(".msg2").innerHTML = str;
+
+
+                str="";
+        str+=kana.length;
+        str+="-------------<br>";
+        for(i=0;i<kana.length;i++){
+            str+=`${kana[i]}<br>`;
+        }
+        str+="-------------<br>";
+        str+=roma.length;
+        str+="-------------<br>";
+        for(i=0;i<roma.length;i++){
+            str+=`${roma[i]}<br>`;
+        }
+        str+="-------------<br>";
+        
+        document.querySelector(".msg2").innerHTML = str;
+
+        // kana2=kanaroma[];
+
+
+        1文字目から残りだけを元の文字列に代入するので先頭の文字を削除することになる
+        tmpWord = tmpWord.slice(1);
+
+        r番目を削除する
+        tmpList.splice(r, 1);
+
