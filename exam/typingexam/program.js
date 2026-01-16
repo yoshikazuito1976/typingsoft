@@ -13,6 +13,7 @@ let tmpList = [];         //mondailistの1つの問題を代入する配列
 let endWord = "";         //入力後の文字を残しておく変数
 let buf = "";             //入力中の文字を残しておく変数
 let preWord = "";         //入力前の文字を残しておく変数
+let missFlg = false;      //ミス状態フラグ
 let total = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []];   //全ての練習記録を残しておく2重配列
 
 //全アスキーコードに対応するLeft位置とTop位置のリスト
@@ -161,10 +162,7 @@ function NextWordView() {
     //入力するべき文字を渡して、そこからローマ字の完成図を求める
     preInputView(tmpWord);
 
-    //入力予定の文字が0文字じゃなかったら、先頭文字を渡して黄色いキーを表示
-    if (preWord.length > 0) {
-        changeColor(preWord.slice(0, 1));
-    }
+    //黄色いマーカー表示は停止（入力受け付けを止めている）
 }
 
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -290,17 +288,9 @@ document.addEventListener('keydown', function (event) {
         //コントロールキーを押した場合の処理------------------------------------
         else if (event.ctrlKey) {
         }
-        //バックスペースキーを押した時の処理------------------------------------
+        //バックスペースキーを押した場合の処理------------------------------------
         else if (event.key == "Backspace" && event.code == "Backspace") {
-            if (buf.length > 0) {
-                buf = buf.slice(0, -1);                                 //文字列から末尾の1文字を削除
-                document.querySelector(".inputBuf").textContent = buf;  //削除した文字列を表示
-                //BSでbufを削除して、文字数が0文字になったら、
-                if (buf.length == 0) {
-                    preInputView(tmpWord);
-                }
-                document.querySelector(".miss").style.display = "none";
-            }
+            // BackSpaceは無視される（戻る仕様をなくした）
         }
         //エンターキーを押した場合の処理-----------------------------------------
         else if (event.code === "Enter") {
@@ -310,67 +300,132 @@ document.addEventListener('keydown', function (event) {
             inputStr = String.fromCharCode(asciiCode).toUpperCase();
             questStr = tmpWord.slice(0, 1);
 
-            buf += inputStr;
-            document.querySelector(".inputBuf").textContent = buf;
-            correct = false;
-            //「バッファの最後の文字」と「入力予定文字の先頭の文字」が同じだったら
-            if (buf.slice(-1) == preWord.slice(0, 1)) {
-                preWord = preWord.slice(1);                                    //文字列から先頭の文字を削除
-                document.querySelector(".inputBefore").textContent = preWord;  //削除後の文字を表示
-                //入力予定文字がまだ1文字以上残っていたら、次の文字のキーを表示
-                if (preWord.length > 0) {
-                    changeColor(preWord.slice(0, 1));
+            // ミス状態フラグをチェック
+            if (missFlg) {
+                // ミス状態中：正しい入力のみ受け付ける（バッファは更新しない）
+                correct = false;
+                //「入力文字」と「入力予定文字の先頭の文字」が同じだったら（大文字で比較）
+                if (inputStr == preWord.slice(0, 1).toUpperCase()) {
                     correct = true;
                 }
-            }
+                
+                if (correct == true) {
+                    missFlg = false;  // ミス状態を解除
+                    buf += inputStr;  // 正しい入力をバッファに追加
+                    document.querySelector(".inputBuf").textContent = buf;
+                    preWord = preWord.slice(1);                                    //文字列から先頭の文字を削除
+                    document.querySelector(".inputBefore").textContent = preWord;  //削除後の文字を表示
+                    document.querySelector(".miss").style.display = "none";        //赤いキーを非表示
 
-            flag = false;   //文字が一致したか、ミスかの判定の初期値を設定
-            for (i = 0; i < kana.length; i++) {
-                //通常のローマ字判定
-                if (kana[i] == tmpWord.slice(0, kana[i].length) && roma[i] == buf) {
-                    tmpWord = tmpWord.slice(kana[i].length);
-                    document.querySelector(".msgStr").textContent = tmpWord;
-                    countStr += kana[i].length;
+                    flag = false;   //文字が一致したか、ミスかの判定の初期値を設定
+                    for (i = 0; i < kana.length; i++) {
+                        //通常のローマ字判定
+                        if (kana[i] == tmpWord.slice(0, kana[i].length) && roma[i] == buf) {
+                            tmpWord = tmpWord.slice(kana[i].length);
+                            document.querySelector(".msgStr").textContent = tmpWord;
+                            countStr += kana[i].length;
 
-                    flag = true;   //文字が一致して、ミスがなかった判定
-                    break;
+                            flag = true;   //文字が一致して、ミスがなかった判定
+                            break;
+                        }
+                        //促音「っ」がある時のローマ字判定
+                        else if ("っ" + kana[i] == tmpWord.slice(0, kana[i].length + 1) && roma[i][0] + roma[i] == buf) {
+                            tmpWord = tmpWord.slice(kana[i].length + 1);
+                            document.querySelector(".msgStr").textContent = tmpWord;
+                            countStr += kana[i].length + 1;
+
+                            flag = true;   //文字が一致して、ミスがなかった判定
+                            break;
+                        }
+                    }
+                    //文字が一致したら
+                    if (flag == true) {
+                        //キーバッファを打ち終わった文字に移す--------------
+                        endWord += buf;
+                        document.querySelector(".inputAfter").textContent = endWord;
+                        //キーバッファをクリア-------------------------------
+                        buf = "";
+                        document.querySelector(".inputBuf").textContent = buf;
+                        document.querySelector(".score2").textContent = `${countStr} 文字`;
+                        //1単語打ち終わった後の処理
+                        if (tmpWord.length == 0) {
+                            countWord++;
+                            document.querySelector(".score3").textContent = `${countWord} ワード`;
+                            NextWordView();
+                        }
+                        preInputView(tmpWord);
+                    }
+                } else {
+                    // ミス状態中の間違った入力：ミスカウントを増やして赤いキーをそのまま表示
+                    countMiss++;
+                    document.querySelector(".score4").textContent = `${countMiss} 回`;
+                    missColor(inputStr);
                 }
-                //促音「っ」がある時のローマ字判定
-                else if ("っ" + kana[i] == tmpWord.slice(0, kana[i].length + 1) && roma[i][0] + roma[i] == buf) {
-                    tmpWord = tmpWord.slice(kana[i].length + 1);
-                    document.querySelector(".msgStr").textContent = tmpWord;
-                    countStr += kana[i].length + 1;
-
-                    flag = true;   //文字が一致して、ミスがなかった判定
-                    break;
+            } else {
+                // 通常状態：まず正しいかチェックしてからバッファに追加
+                correct = false;
+                
+                //「入力文字」と「入力予定文字の先頭の文字」が同じだったら（大文字で比較）
+                if (inputStr == preWord.slice(0, 1).toUpperCase()) {
+                    correct = true;
                 }
-            }
-            //文字が一致したら
-            if (flag == true) {
-                //ミスの赤いキーを非表示にする
-                document.querySelector(".miss").style.display = "none";
+                
+                if (correct == true) {
+                    // 正しい入力の場合のみバッファに追加
+                    buf += inputStr;
+                    document.querySelector(".inputBuf").textContent = buf;
+                    preWord = preWord.slice(1);                                    //文字列から先頭の文字を削除
+                    document.querySelector(".inputBefore").textContent = preWord;  //削除後の文字を表示
+                    //黄色いマーカー表示は停止（入力受け付けを止めている）
 
-                correct = true;
-                //キーバッファを打ち終わった文字に移す--------------
-                endWord += buf;
-                document.querySelector(".inputAfter").textContent = endWord;
-                //キーバッファをクリア-------------------------------
-                buf = "";
-                document.querySelector(".inputBuf").textContent = buf;
-                document.querySelector(".score2").textContent = `${countStr} 文字`;
-                //1単語打ち終わった後の処理
-                if (tmpWord.length == 0) {
-                    countWord++;
-                    document.querySelector(".score3").textContent = `${countWord} ワード`;
-                    NextWordView();
+                    flag = false;   //文字が一致したか、ミスかの判定の初期値を設定
+                    for (i = 0; i < kana.length; i++) {
+                        //通常のローマ字判定
+                        if (kana[i] == tmpWord.slice(0, kana[i].length) && roma[i] == buf) {
+                            tmpWord = tmpWord.slice(kana[i].length);
+                            document.querySelector(".msgStr").textContent = tmpWord;
+                            countStr += kana[i].length;
+
+                            flag = true;   //文字が一致して、ミスがなかった判定
+                            break;
+                        }
+                        //促音「っ」がある時のローマ字判定
+                        else if ("っ" + kana[i] == tmpWord.slice(0, kana[i].length + 1) && roma[i][0] + roma[i] == buf) {
+                            tmpWord = tmpWord.slice(kana[i].length + 1);
+                            document.querySelector(".msgStr").textContent = tmpWord;
+                            countStr += kana[i].length + 1;
+
+                            flag = true;   //文字が一致して、ミスがなかった判定
+                            break;
+                        }
+                    }
+                    //文字が一致したら
+                    if (flag == true) {
+                        //ミスの赤いキーを非表示にする
+                        document.querySelector(".miss").style.display = "none";
+
+                        //キーバッファを打ち終わった文字に移す--------------
+                        endWord += buf;
+                        document.querySelector(".inputAfter").textContent = endWord;
+                        //キーバッファをクリア-------------------------------
+                        buf = "";
+                        document.querySelector(".inputBuf").textContent = buf;
+                        document.querySelector(".score2").textContent = `${countStr} 文字`;
+                        //1単語打ち終わった後の処理
+                        if (tmpWord.length == 0) {
+                            countWord++;
+                            document.querySelector(".score3").textContent = `${countWord} ワード`;
+                            NextWordView();
+                        }
+                        preInputView(tmpWord);
+                    }
+                } else {
+                    // 間違った入力の場合：ミス状態に入る（バッファには追加しない）
+                    missFlg = true;  // ミス状態を設定
+                    countMiss++;
+                    document.querySelector(".score4").textContent = `${countMiss} 回`;
+                    missColor(inputStr);
                 }
-                preInputView(tmpWord);
-            }
-            //ミスキー入力だったら
-            if (correct == false) {
-                countMiss++;
-                document.querySelector(".score4").textContent = `${countMiss} 回`;
-                missColor(inputStr);
             }
         }
     }
