@@ -1,3 +1,7 @@
+//import quest from "./quest.js";
+
+const quest = window.quest
+
 document.querySelector(".hit").style.display = "none";
 document.querySelector(".miss").style.display = "none";
 let countStr = 0;         //入力した文字数
@@ -35,8 +39,8 @@ let posi = [
 
 //問題の配列の先頭の文字を抜き出し、タイトルにするための配列を作る
 titleStr = [];
-for (i = 0; i < Math.min(mondailist.length, 10); i++) {
-    titleStr[i] = mondailist[i][0];
+for (i = 0; i < Math.min(window.quest.length, 10); i++) {
+  titleStr[i] = window.quest[i].category;
 }
 
 //ローマ字カナ対応表を1つの1次元配列で作り、それを2つの配列に分離している。
@@ -122,28 +126,50 @@ function missColor(key) {
 //⑥次のワードを表示
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 function NextWordView() {
-    //登録順に表示----------------------------------------------------
-    if (order) {
-        tmpWord = tmpList[r];
-        document.querySelector(".msgStr").textContent = tmpWord;
-        r++;
-        if (r >= tmpList.length) {
-            r = 0;
-        }
-    }
-    //ランダムで表示--------------------------------------------------
-    else {
-        r = Math.floor(Math.random() * tmpList.length);   //乱数を求める
-        tmpWord = tmpList[r];                             //配列から1件抜出し変数に代入
-        tmpList.splice(r, 1);                             //代入したデータを配列から削除
+  // tmpList が空なら補充（lessonNo が確定している前提）
+  if (!tmpList || tmpList.length === 0) {
+    tmpList = [...quest[lessonNo].items];
+  }
 
-        //配列にデータが1件もなくなったら
-        if (tmpList.length == 0) {
-            tmpList = [...mondailist[lessonNo]];    //大元の配列から今のレッスンNoのデータを練習用配列にコピー代入
-            tmpList = tmpList.slice(1);             //先頭の文字列はタイトルなので必ず削除
-        }
-        document.querySelector(".msgStr").textContent = tmpWord;
+  if (order) {
+    // r が範囲外なら戻す
+    if (r >= tmpList.length) r = 0;
+
+    const q = tmpList[r];
+    tmpWord = q.kana;
+    document.querySelector(".msgStr").textContent = q.display;
+
+    r++;
+    if (r >= tmpList.length) r = 0;
+
+  } else {
+    r = Math.floor(Math.random() * tmpList.length);
+
+    const q = tmpList[r];
+    tmpWord = q.kana;
+    document.querySelector(".msgStr").textContent = q.display;
+
+    tmpList.splice(r, 1);
+
+    // 次回のために枯渇したら補充
+    if (tmpList.length === 0) {
+      tmpList = [...quest[lessonNo].items];
     }
+  }
+
+  // 表示系リセット（ここは元のままでOK）
+  endWord = "";
+  document.querySelector(".inputAfter").textContent = endWord;
+  buf = "";
+  document.querySelector(".inputBuf").textContent = buf;
+  preWord = "";
+  document.querySelector(".inputBefore").textContent = preWord;
+
+  
+
+  // 模範解答（ここで落ちるなら tmpWord が string じゃない）
+  preInputView(tmpWord);
+}
     //入力後の文字、入力中の文字、入力予定の文字をクリア
     endWord = "";
     document.querySelector(".inputAfter").textContent = endWord;
@@ -163,12 +189,25 @@ function NextWordView() {
     preInputView(tmpWord);
 
     //黄色いマーカー表示は停止（入力受け付けを止めている）
+    
+// ★ レッスン終了時のみ実行
+function centerMsgStr() {
+  const el = document.querySelector(".msgStr");
+  el.style.width = "";
+  el.style.left = "";
+  el.style.display = "inline-block";
+
+  const w = el.offsetWidth;
+  el.style.left = (900 - w) / 2 + "px";
+  el.style.width = w + "px";
 }
 
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 //⑦レッスンスタート
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 function lessonStart() {
+    document.querySelector(".msgStr").style.background = "yellow"; //すぐ消す
+    document.querySelector(".inputBefore").style.background = "lime";　//すぐ消す
     startFlg = true;
 
     document.querySelector(".space").textContent = "";                //スペースキーの文字クリア
@@ -195,10 +234,16 @@ function lessonStart() {
 
     r = 0;
 
-    tmpList = [...mondailist[lessonNo]];                   //大元の配列から今のレッスンNoのデータを練習用配列にコピー代入
-    tmpList = tmpList.slice(1);                            //先頭の文字列はタイトルなので必ず削除
-
+    tmpList = [...quest[lessonNo].items];
+    r = 0;
     NextWordView();
+    const el = document.querySelector(".msgStr");
+    //el.textContent = q.display;
+    el.style.background = "yellow";
+    el.style.color = "black";
+    el.style.fontSize = "48px";
+    el.style.zIndex = "9999";
+    console.log("msgStr now:", el.textContent);
 
     //nullだったら実行されて、（つまり、あったらの反対なら実行）
     if (!countdown) {
@@ -322,7 +367,7 @@ document.addEventListener('keydown', function (event) {
                         //通常のローマ字判定
                         if (kana[i] == tmpWord.slice(0, kana[i].length) && roma[i] == buf) {
                             tmpWord = tmpWord.slice(kana[i].length);
-                            document.querySelector(".msgStr").textContent = tmpWord;
+                            //document.querySelector(".msgStr").textContent = tmpWord;
                             countStr += kana[i].length;
 
                             flag = true;   //文字が一致して、ミスがなかった判定
@@ -331,7 +376,7 @@ document.addEventListener('keydown', function (event) {
                         //促音「っ」がある時のローマ字判定
                         else if ("っ" + kana[i] == tmpWord.slice(0, kana[i].length + 1) && roma[i][0] + roma[i] == buf) {
                             tmpWord = tmpWord.slice(kana[i].length + 1);
-                            document.querySelector(".msgStr").textContent = tmpWord;
+                            //document.querySelector(".msgStr").textContent = tmpWord;
                             countStr += kana[i].length + 1;
 
                             flag = true;   //文字が一致して、ミスがなかった判定
@@ -383,7 +428,7 @@ document.addEventListener('keydown', function (event) {
                         //通常のローマ字判定
                         if (kana[i] == tmpWord.slice(0, kana[i].length) && roma[i] == buf) {
                             tmpWord = tmpWord.slice(kana[i].length);
-                            document.querySelector(".msgStr").textContent = tmpWord;
+                            //document.querySelector(".msgStr").textContent = tmpWord;
                             countStr += kana[i].length;
 
                             flag = true;   //文字が一致して、ミスがなかった判定
@@ -392,7 +437,7 @@ document.addEventListener('keydown', function (event) {
                         //促音「っ」がある時のローマ字判定
                         else if ("っ" + kana[i] == tmpWord.slice(0, kana[i].length + 1) && roma[i][0] + roma[i] == buf) {
                             tmpWord = tmpWord.slice(kana[i].length + 1);
-                            document.querySelector(".msgStr").textContent = tmpWord;
+                            //document.querySelector(".msgStr").textContent = tmpWord;
                             countStr += kana[i].length + 1;
 
                             flag = true;   //文字が一致して、ミスがなかった判定
@@ -430,20 +475,22 @@ document.addEventListener('keydown', function (event) {
         }
     }
     else {
-        //スペースキーを押して練習開始
-        if (asciiCode == 32) {
+        //スペースキーを押して練習開始（環境差に強い）
+        if (event.code === "Space" || event.key === " " || event.key === "Spacebar") {
+            event.preventDefault(); // ページスクロール等も抑止
             lessonStart();
         }
-    }
-});
+            }
+        });
 
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 //関数外処理
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
-for (i = 0; i < Math.min(mondailist.length, 10); i++) {
-    document.querySelector(".title" + i).innerHTML = `${titleStr[i]}(0)`;
+for (i = 0; i < Math.min(quest.length, 10); i++) {
+  document.querySelector(".title" + i).innerHTML = `${titleStr[i]}(0)`;
 }
+
 
 //選択したレッスンごとにキーボードの文字の色を変える----------------------------------------------------
 changeLesson();
