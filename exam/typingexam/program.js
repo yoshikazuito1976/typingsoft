@@ -212,18 +212,12 @@ function NextWordView() {
     document.querySelector(".inputBefore").textContent = preWord;
 
 
-    //黄色いマーカー表示は停止（入力受け付けを止めている）
+        // キー表示をクリア
+    missFlg = false;
+    document.querySelector(".hit").style.display = "none";
+    document.querySelector(".miss").style.display = "none";
     
-// ★ レッスン終了時のみ実行
-function centerMsgStr() {
-  const el = document.querySelector(".msgStr");
-  el.style.width = "";
-  el.style.left = "";
-  el.style.display = "inline-block";
 
-  const w = el.offsetWidth;
-  el.style.left = (900 - w) / 2 + "px";
-  el.style.width = w + "px";
 }
 
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -261,13 +255,7 @@ function lessonStart() {
     tmpList = [...quest[lessonNo].items];
     r = 0;
     NextWordView();
-    const el = document.querySelector(".msgStr");
-    //el.textContent = q.display;
-    el.style.background = "yellow";
-    el.style.color = "black";
-    el.style.fontSize = "48px";
-    el.style.zIndex = "9999";
-    console.log("msgStr now:", el.textContent);
+
 
     //nullだったら実行されて、（つまり、あったらの反対なら実行）
     if (!countdown) {
