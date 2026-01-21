@@ -381,6 +381,8 @@ document.addEventListener('keydown', function (event) {
             buf = nextBuf;
             document.querySelector(".inputBuf").textContent = buf;
 
+            changeColor(ch);
+
             // ミス表示は正しい入力が来たら解除（現行挙動に寄せる）
             if (missFlg) {
                 missFlg = false;
