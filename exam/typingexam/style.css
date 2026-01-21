@@ -257,38 +257,26 @@
   position: relative;
   width: 900px;
   height: 80px;
-  margin: 0px auto;
+  margin: 0 auto;
   font-size: 60px;
-
-  display: flex;            /* 追加 */
-  justify-content: center;  /* 追加：横中央 */
-  align-items: center;      /* 追加：縦中央 */
+  text-align: center; /* ★追加 */
 }
 
 
 .quest .msg .msgStr {
-  position: static;        /* absolute をやめる */
-  display: inline-block;
+  white-space: nowrap;   /* ★改行させない */
+  word-break: keep-all;  /* ★日本語のバラバラ改行を防ぐ */
+  position: absolute;
+  left: 0 !important;            /* ★追加 */
+  right: 0 !important; 
+  top: 0;          /* ★追加 */
+  width: auto !important;        /* ★追加：固定幅を持たせない */
   height: 80px;
   line-height: 80px;
-  overflow: hidden;
-
-  text-align: center;      /* 右寄せをやめる */
-  width: max-content;      /* 文字幅に合わせる */
-  max-width: 100%;
-  white-space: nowrap;
+  overflow: visible;  /* ★変更：hidden だと切れる（必要なら hiddenに戻してOK） */
+  text-align: center; /* ★変更：right だと表示位置がズレる */
 }
 
-.quest .msg .unit {
-    font-size: 30px;
-    position: absolute;
-    display: inline-block;
-    height: 30px;
-    line-height: 30px;
-    left: 200px;
-    top: 33px;
-    /* background-color: lightgreen; */
-}
 
 
 .quest .bufView {
