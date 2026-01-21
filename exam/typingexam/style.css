@@ -253,28 +253,30 @@
 }
 
 .quest .msg {
-    background-color: #fff;
-    position: relative;
-    /* text-align: center; */
-    width: 900px;
-    height: 80px;
-    margin: 0px auto;
-    margin-top: 0px;
-    /* position: absolute;
-    left: 50%;
-    margin: -200px;
-    top: 0px; */
-    font-size: 60px;
+  background-color: #fff;
+  position: relative;
+  width: 900px;
+  height: 80px;
+  margin: 0px auto;
+  font-size: 60px;
+
+  display: flex;            /* 追加 */
+  justify-content: center;  /* 追加：横中央 */
+  align-items: center;      /* 追加：縦中央 */
 }
 
+
 .quest .msg .msgStr {
-    position: absolute;
-    display: inline-block;
-    height: 80px;
-    line-height: 80px;
-    /* background-color: lightgreen; */
-    overflow: hidden;
-    text-align: right;
+  position: static;        /* absolute をやめる */
+  display: inline-block;
+  height: 80px;
+  line-height: 80px;
+  overflow: hidden;
+
+  text-align: center;      /* 右寄せをやめる */
+  width: max-content;      /* 文字幅に合わせる */
+  max-width: 100%;
+  white-space: nowrap;
 }
 
 .quest .msg .unit {
