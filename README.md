@@ -85,4 +85,16 @@ Issueは「気づきメモ・相談・改善要望」を残す場所です。
 
 Apache 等で `index.html` を配信し、ブラウザからアクセスしてください。
 
-例：
+
+
+## ライセンス
+
+本リポジトリは MIT License のもとで公開されています。
+
+本ソフトウェアは学内での教育利用を主目的としていますが、
+ライセンスの範囲内での改変・再利用・派生開発を妨げるものではありません。
+
+## Credits
+Originally developed by Naoyuki Takahashi.  
+Refactored by Yoshikazu Ito (SIW TypingSoft project).
+
