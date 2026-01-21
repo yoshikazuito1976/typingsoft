@@ -4,6 +4,11 @@ const quest = window.quest
 
 document.querySelector(".hit").style.display = "none";
 document.querySelector(".miss").style.display = "none";
+
+let currentQ = null;      // 今の問題
+let expectedList = [];    // currentQ.romaji を大文字化した配列
+let modelAns = "";        // 表示用の模範解答（ひとまず先頭）
+
 let countStr = 0;         //入力した文字数
 let countWord = 0;        //入力したワード数
 let countMiss = 0;        //ミスをした回数
@@ -52,9 +57,22 @@ for (i = 0, j = 0; i < kanaroma.length; i += 2, j++) {
     roma[j] = kanaroma[i + 1];
 }
 
+//ユーティリティ関数
+function isPrefixOk(buf, list) {
+    return list.some(ans => ans.startsWith(buf));
+}
+function isExactOk(buf, list) {
+    return list.includes(buf);
+}
+
+
+
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 //②これから入力する模範解答のローマ字を算出する関数
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+
+
 function preInputView(word) {
     preWord = "";
     tmp = word;      //渡された引数をいったん仮の変数に代入
@@ -97,7 +115,7 @@ function lessonStop() {
     document.querySelector(".inputAfter").textContent = endWord;
     buf = "";
     document.querySelector(".inputBuf").textContent = buf;
-    preWord = "";
+    preWord = modelAns;
     document.querySelector(".inputBefore").textContent = preWord;
 }
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -125,68 +143,74 @@ function missColor(key) {
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 //⑥次のワードを表示
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-function NextWordView() {
-  // tmpList が空なら補充（lessonNo が確定している前提）
-  if (!tmpList || tmpList.length === 0) {
-    tmpList = [...quest[lessonNo].items];
-  }
+function centerMsgStr() {
+    
+    const el = document.querySelector(".msgStr");
+    const parent = el.parentElement;           // msgStrを囲ってる枠
+    if (!parent) return;
 
-  if (order) {
-    // r が範囲外なら戻す
-    if (r >= tmpList.length) r = 0;
+    // 幅を取り直すため一旦 auto に戻す
+    el.style.width = "auto";
 
-    const q = tmpList[r];
-    tmpWord = q.kana;
-    document.querySelector(".msgStr").textContent = q.display;
+    const parentW = parent.clientWidth;
+    const elW = el.offsetWidth;
 
-    r++;
-    if (r >= tmpList.length) r = 0;
-
-  } else {
-    r = Math.floor(Math.random() * tmpList.length);
-
-    const q = tmpList[r];
-    tmpWord = q.kana;
-    document.querySelector(".msgStr").textContent = q.display;
-
-    tmpList.splice(r, 1);
-
-    // 次回のために枯渇したら補充
-    if (tmpList.length === 0) {
-      tmpList = [...quest[lessonNo].items];
-    }
-  }
-
-  // 表示系リセット（ここは元のままでOK）
-  endWord = "";
-  document.querySelector(".inputAfter").textContent = endWord;
-  buf = "";
-  document.querySelector(".inputBuf").textContent = buf;
-  preWord = "";
-  document.querySelector(".inputBefore").textContent = preWord;
-
-  
-
-  // 模範解答（ここで落ちるなら tmpWord が string じゃない）
-  preInputView(tmpWord);
+    el.style.left = ((parentW - elW) / 2) + "px";
+    el.style.width = elW + "px";               // 幅を固定（ズレ防止）
 }
-    //入力後の文字、入力中の文字、入力予定の文字をクリア
+
+
+function NextWordView() {
+    // tmpList が空なら補充（lessonNo が確定している前提）
+    if (!tmpList || tmpList.length === 0) {
+        tmpList = [...quest[lessonNo].items];
+    }
+
+    if (order) {
+        // r が範囲外なら戻す
+        if (r >= tmpList.length) r = 0;
+
+        const q = tmpList[r];
+        tmpWord = q.kana;
+        document.querySelector(".msgStr").textContent = q.display;
+        //centerMsgStr();
+
+        currentQ = q;
+        expectedList = (currentQ.romaji || []).map(s => String(s).toUpperCase());
+        modelAns = expectedList[0] || ""; // 表示用（暫定で先頭）
+
+
+        r++;
+        if (r >= tmpList.length) r = 0;
+
+    } else {
+        r = Math.floor(Math.random() * tmpList.length);
+
+        const q = tmpList[r];
+        tmpWord = q.kana;
+        document.querySelector(".msgStr").textContent = q.display;
+
+        currentQ = q;
+        expectedList = (currentQ.romaji || []).map(s => String(s).toUpperCase());
+        modelAns = expectedList[0] || ""; // 表示用（暫定で先頭）
+
+
+        tmpList.splice(r, 1);
+
+        // 次回のために枯渇したら補充
+        if (tmpList.length === 0) {
+            tmpList = [...quest[lessonNo].items];
+        }
+    }
+
+    // 表示系リセット（ここは元のままでOK）
     endWord = "";
     document.querySelector(".inputAfter").textContent = endWord;
     buf = "";
     document.querySelector(".inputBuf").textContent = buf;
-    preWord = "";
+    preWord = modelAns;
     document.querySelector(".inputBefore").textContent = preWord;
 
-    //--------------------------------------------------------------
-    textElement = document.querySelector(".msgStr");
-    textElement.style.width = '';                          //一度幅をクリアする必要がある
-    textWidth = textElement.offsetWidth;                   //幅を取得する
-    textElement.style.left = (900 - textWidth) / 2 + 'px'; //幅から左位置を算出する
-    textElement.style.width = textWidth + 'px';            //幅を固定として指定する
-    //--------------------------------------------------------------
-    //入力するべき文字を渡して、そこからローマ字の完成図を求める
-    preInputView(tmpWord);
 
     //黄色いマーカー表示は停止（入力受け付けを止めている）
     
@@ -312,7 +336,11 @@ function lessonStart() {
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 document.addEventListener('keydown', function (event) {
     //アスキーコードを取得
-    let asciiCode = event.key.charCodeAt(0);
+    let asciiCode = null;
+    if (event.key && event.key.length === 1) {
+        asciiCode = event.key.toUpperCase().charCodeAt(0);
+    }
+
     if (event.key === "Tab") {
         event.preventDefault(); // Tabキーのデフォルト動作を無効にする
     }
@@ -342,135 +370,52 @@ document.addEventListener('keydown', function (event) {
         }
         //それ以外のキーを押した場合の処理----------------------------------------
         else {
-            inputStr = String.fromCharCode(asciiCode).toUpperCase();
-            questStr = tmpWord.slice(0, 1);
+            // 1文字キー以外は無視（Shift / Arrow / F1 など）
+            if (!event.key || event.key.length !== 1) return;
 
-            // ミス状態フラグをチェック
+            const ch = event.key.toUpperCase();
+
+            // currentQ / expectedList が未初期化なら何もしない（保険）
+            if (!currentQ || expectedList.length === 0) return;
+
+            const nextBuf = buf + ch;
+
+            // 2) prefix 判定：どの候補の先頭にもならないならミス
+            if (!isPrefixOk(nextBuf, expectedList)) {
+                missFlg = true;
+                countMiss++;
+                document.querySelector(".score4").textContent = `${countMiss} 回`;
+                missColor(ch);
+                return;
+            }
+
+            // OK: バッファ更新
+            buf = nextBuf;
+            document.querySelector(".inputBuf").textContent = buf;
+
+            // ミス表示は正しい入力が来たら解除（現行挙動に寄せる）
             if (missFlg) {
-                // ミス状態中：正しい入力のみ受け付ける（バッファは更新しない）
-                correct = false;
-                //「入力文字」と「入力予定文字の先頭の文字」が同じだったら（大文字で比較）
-                if (inputStr == preWord.slice(0, 1).toUpperCase()) {
-                    correct = true;
-                }
-                
-                if (correct == true) {
-                    missFlg = false;  // ミス状態を解除
-                    buf += inputStr;  // 正しい入力をバッファに追加
-                    document.querySelector(".inputBuf").textContent = buf;
-                    preWord = preWord.slice(1);                                    //文字列から先頭の文字を削除
-                    document.querySelector(".inputBefore").textContent = preWord;  //削除後の文字を表示
-                    document.querySelector(".miss").style.display = "none";        //赤いキーを非表示
+                missFlg = false;
+                document.querySelector(".miss").style.display = "none";
+            }
 
-                    flag = false;   //文字が一致したか、ミスかの判定の初期値を設定
-                    for (i = 0; i < kana.length; i++) {
-                        //通常のローマ字判定
-                        if (kana[i] == tmpWord.slice(0, kana[i].length) && roma[i] == buf) {
-                            tmpWord = tmpWord.slice(kana[i].length);
-                            //document.querySelector(".msgStr").textContent = tmpWord;
-                            countStr += kana[i].length;
+            // 「文字数」はキー入力数として加算（辞書方式だとこれが自然）
+            countStr++;
+            document.querySelector(".score2").textContent = `${countStr} 文字`;
 
-                            flag = true;   //文字が一致して、ミスがなかった判定
-                            break;
-                        }
-                        //促音「っ」がある時のローマ字判定
-                        else if ("っ" + kana[i] == tmpWord.slice(0, kana[i].length + 1) && roma[i][0] + roma[i] == buf) {
-                            tmpWord = tmpWord.slice(kana[i].length + 1);
-                            //document.querySelector(".msgStr").textContent = tmpWord;
-                            countStr += kana[i].length + 1;
+            // 表示：inputBefore を “残り” っぽく減らす（暫定：modelAnsの先頭から削る）
+            // ※辞書の複数候補があるので、本当は「今一致している候補」を選ぶのが理想。
+            //   でも最小変更ではまずこれでOK。
+            if (preWord && preWord.length > 0) {
+                preWord = preWord.slice(1);
+                document.querySelector(".inputBefore").textContent = preWord;
+            }
 
-                            flag = true;   //文字が一致して、ミスがなかった判定
-                            break;
-                        }
-                    }
-                    //文字が一致したら
-                    if (flag == true) {
-                        //キーバッファを打ち終わった文字に移す--------------
-                        endWord += buf;
-                        document.querySelector(".inputAfter").textContent = endWord;
-                        //キーバッファをクリア-------------------------------
-                        buf = "";
-                        document.querySelector(".inputBuf").textContent = buf;
-                        document.querySelector(".score2").textContent = `${countStr} 文字`;
-                        //1単語打ち終わった後の処理
-                        if (tmpWord.length == 0) {
-                            countWord++;
-                            document.querySelector(".score3").textContent = `${countWord} ワード`;
-                            NextWordView();
-                        }
-                        preInputView(tmpWord);
-                    }
-                } else {
-                    // ミス状態中の間違った入力：ミスカウントを増やして赤いキーをそのまま表示
-                    countMiss++;
-                    document.querySelector(".score4").textContent = `${countMiss} 回`;
-                    missColor(inputStr);
-                }
-            } else {
-                // 通常状態：まず正しいかチェックしてからバッファに追加
-                correct = false;
-                
-                //「入力文字」と「入力予定文字の先頭の文字」が同じだったら（大文字で比較）
-                if (inputStr == preWord.slice(0, 1).toUpperCase()) {
-                    correct = true;
-                }
-                
-                if (correct == true) {
-                    // 正しい入力の場合のみバッファに追加
-                    buf += inputStr;
-                    document.querySelector(".inputBuf").textContent = buf;
-                    preWord = preWord.slice(1);                                    //文字列から先頭の文字を削除
-                    document.querySelector(".inputBefore").textContent = preWord;  //削除後の文字を表示
-                    //黄色いマーカー表示は停止（入力受け付けを止めている）
-
-                    flag = false;   //文字が一致したか、ミスかの判定の初期値を設定
-                    for (i = 0; i < kana.length; i++) {
-                        //通常のローマ字判定
-                        if (kana[i] == tmpWord.slice(0, kana[i].length) && roma[i] == buf) {
-                            tmpWord = tmpWord.slice(kana[i].length);
-                            //document.querySelector(".msgStr").textContent = tmpWord;
-                            countStr += kana[i].length;
-
-                            flag = true;   //文字が一致して、ミスがなかった判定
-                            break;
-                        }
-                        //促音「っ」がある時のローマ字判定
-                        else if ("っ" + kana[i] == tmpWord.slice(0, kana[i].length + 1) && roma[i][0] + roma[i] == buf) {
-                            tmpWord = tmpWord.slice(kana[i].length + 1);
-                            //document.querySelector(".msgStr").textContent = tmpWord;
-                            countStr += kana[i].length + 1;
-
-                            flag = true;   //文字が一致して、ミスがなかった判定
-                            break;
-                        }
-                    }
-                    //文字が一致したら
-                    if (flag == true) {
-                        //ミスの赤いキーを非表示にする
-                        document.querySelector(".miss").style.display = "none";
-
-                        //キーバッファを打ち終わった文字に移す--------------
-                        endWord += buf;
-                        document.querySelector(".inputAfter").textContent = endWord;
-                        //キーバッファをクリア-------------------------------
-                        buf = "";
-                        document.querySelector(".inputBuf").textContent = buf;
-                        document.querySelector(".score2").textContent = `${countStr} 文字`;
-                        //1単語打ち終わった後の処理
-                        if (tmpWord.length == 0) {
-                            countWord++;
-                            document.querySelector(".score3").textContent = `${countWord} ワード`;
-                            NextWordView();
-                        }
-                        preInputView(tmpWord);
-                    }
-                } else {
-                    // 間違った入力の場合：ミス状態に入る（バッファには追加しない）
-                    missFlg = true;  // ミス状態を設定
-                    countMiss++;
-                    document.querySelector(".score4").textContent = `${countMiss} 回`;
-                    missColor(inputStr);
-                }
+            // 3) 完全一致したら 1問クリア
+            if (isExactOk(buf, expectedList)) {
+                countWord++;
+                document.querySelector(".score3").textContent = `${countWord} ワード`;
+                NextWordView();
             }
         }
     }
@@ -480,15 +425,15 @@ document.addEventListener('keydown', function (event) {
             event.preventDefault(); // ページスクロール等も抑止
             lessonStart();
         }
-            }
-        });
+    }
+});
 
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 //関数外処理
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
 for (i = 0; i < Math.min(quest.length, 10); i++) {
-  document.querySelector(".title" + i).innerHTML = `${titleStr[i]}(0)`;
+    document.querySelector(".title" + i).innerHTML = `${titleStr[i]}(0)`;
 }
 
 

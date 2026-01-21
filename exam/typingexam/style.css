@@ -262,6 +262,7 @@
   text-align: center; /* ★追加 */
 }
 
+
 .quest .msg .msgStr {
   white-space: nowrap;   /* ★改行させない */
   word-break: keep-all;  /* ★日本語のバラバラ改行を防ぐ */
