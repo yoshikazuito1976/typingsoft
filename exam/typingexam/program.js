@@ -1,6 +1,6 @@
 //import quest from "./quest.js";
 
-
+const quest = window.quest
 
 document.querySelector(".hit").style.display = "none";
 document.querySelector(".miss").style.display = "none";
@@ -44,8 +44,8 @@ let posi = [
 
 //問題の配列の先頭の文字を抜き出し、タイトルにするための配列を作る
 titleStr = [];
-for (i = 0; i < Math.min(quest.length, 10); i++) {
-    titleStr[i] = quest[i].category;
+for (i = 0; i < Math.min(window.quest.length, 10); i++) {
+  titleStr[i] = window.quest[i].category;
 }
 
 //ローマ字カナ対応表を1つの1次元配列で作り、それを2つの配列に分離している。
@@ -212,15 +212,19 @@ function NextWordView() {
     document.querySelector(".inputBefore").textContent = preWord;
 
 
+    //黄色いマーカー表示は停止（入力受け付けを止めている）
+    
+// ★ レッスン終了時のみ実行
+function centerMsgStr() {
+  const el = document.querySelector(".msgStr");
+  el.style.width = "";
+  el.style.left = "";
+  el.style.display = "inline-block";
 
-    // 模範解答（ここで落ちるなら tmpWord が string じゃない）
-    //preInputView(tmpWord);
+  const w = el.offsetWidth;
+  el.style.left = (900 - w) / 2 + "px";
+  el.style.width = w + "px";
 }
-
-
-
-
-//黄色いマーカー表示は停止（入力受け付けを止めている）
 
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 //⑦レッスンスタート
@@ -257,13 +261,13 @@ function lessonStart() {
     tmpList = [...quest[lessonNo].items];
     r = 0;
     NextWordView();
-    // const el = document.querySelector(".msgStr");
-    // el.textContent = q.display;
-    // el.style.background = "yellow";
-    // el.style.color = "black";
-    // el.style.fontSize = "48px";
-    // el.style.zIndex = "9999";
-    // console.log("msgStr now:", el.textContent);
+    const el = document.querySelector(".msgStr");
+    //el.textContent = q.display;
+    el.style.background = "yellow";
+    el.style.color = "black";
+    el.style.fontSize = "48px";
+    el.style.zIndex = "9999";
+    console.log("msgStr now:", el.textContent);
 
     //nullだったら実行されて、（つまり、あったらの反対なら実行）
     if (!countdown) {
