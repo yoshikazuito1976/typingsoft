@@ -47,11 +47,12 @@ window.quest = [
 
       // 長語（スペースなし）
       { display: "仮想環境", kana: "かそうかんきょう", romaji: ["kasoukankyou"] },
-      { display: "報告連絡相談", kana: "ほうこくれんらくそうだん", romaji: ["houkokurenrakusoudan"] },]
-      },
-      {
-  category: "日本語（文章）",
-  items: [
+      { display: "報告連絡相談", kana: "ほうこくれんらくそうだん", romaji: ["houkokurenrakusoudan"] }
+    ]
+  },
+  {
+    category: "日本語（文章）",
+    items: [
     {
       display: "今日はタイピングの練習をします",
       kana: "きょうはたいぴんぐのれんしゅうをします",
@@ -106,9 +107,6 @@ window.quest = [
     }
   ]
 }
-
-    ]
-  }
 ];
 
 // 互換（既存 program.js 用：当面維持）
