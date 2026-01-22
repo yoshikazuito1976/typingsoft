@@ -186,11 +186,7 @@ window.quest = [
           "kextuseki"]
       },
       { display: "成績", kana: "せいせき", romaji: ["seiseki"] },
-<<<<<<< HEAD
-      { display: "単位", kana: "たんい", romaji: ["tanni"] },
-=======
-      { display: "単位", kana: "たんい", romaji: ["tani, "tanni""] },
->>>>>>> da6f914e5368ee4eb87f55ef2e4c9b2afec80c6f
+      { display: "単位", kana: "たんい", romaji: ["tani", "tanni"] },
 
       // ===== 事務・手続 =====
       { display: "入学", kana: "にゅうがく", romaji: ["nyuugaku"] },
@@ -213,24 +209,15 @@ window.quest = [
         display: "確認", kana: "かくにん", romaji: ["kakunin","kakuninn"   // n多打
         ]
       },
-      { display: "完了", kana: "かんりょう", romaji: ["kanryou", 
-    "kannryou",  // n多打
-    "kannryou"] },
+      { display: "完了", kana: "かんりょう", romaji: ["kanryou", "kannryou"] },
 
       // ===== IT基礎 =====
       { display: "パソコン", kana: "ぱそこん", romaji: ["pasokon", "pasokonn"] },
       { display: "キーボード", kana: "きーぼーど", romaji: ["ki-bo-do"] },
       { display: "マウス", kana: "まうす", romaji: ["mausu"] },
       { display: "ディスプレイ", kana: "でぃすぷれい", romaji: ["disupurei", "dhisupurei"] },
-      { display: "インターネット", kana: "いんたーねっと", romaji: ["inta-netto",   // 標準
-    "inta-netxtu",  // xtu
-    "inta-netltu",  // ltu
-    "innta-netto",  // n多打
-    "innta-netxtu",
-    "innta-netltu"
-  ] },
-      { display: "ログイン", kana: "ろぐいん", romaji: ["roguin", 
-    "roguinn"] },
+      { display: "インターネット", kana: "いんたーねっと", romaji: ["inta-netto", "inta-netxtu", "inta-netltu", "innta-netto", "innta-netxtu", "innta-netltu"] },
+      { display: "ログイン", kana: "ろぐいん", romaji: ["roguin", "roguinn"] },
       { display: "ログアウト", kana: "ろぐあうと", romaji: ["roguauto"] },
 
       // ===== プログラミング =====
@@ -254,7 +241,7 @@ window.quest = [
       // ===== クラウド・OS =====
       { display: "クラウド", kana: "くらうど", romaji: ["kuraudo"] },
       { display: "仮想環境", kana: "かそうかんきょう", romaji: ["kasoukankyou","kasoukannkyou"] },
-     
+
       { display: "コマンド", kana: "こまんど", romaji: ["komando","komanndo"] },
       { display: "ファイル", kana: "ふぁいる", romaji: ["fairu"] },
       { display: "保存", kana: "ほぞん", romaji: ["hozon","hozonn"] },
