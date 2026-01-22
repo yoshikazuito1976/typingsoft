@@ -151,7 +151,7 @@ window.quest = [
       { display: "出席", kana: "しゅっせき", romaji: ["shusseki", "syusseki"] },
       { display: "欠席", kana: "けっせき", romaji: ["kesseki"] },
       { display: "成績", kana: "せいせき", romaji: ["seiseki"] },
-      { display: "単位", kana: "たんい", romaji: ["tani"] },
+      { display: "単位", kana: "たんい", romaji: ["tani, "tanni""] },
 
       // ===== 事務・手続 =====
       { display: "入学", kana: "にゅうがく", romaji: ["nyuugaku"] },
