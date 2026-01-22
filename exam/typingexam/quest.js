@@ -47,7 +47,66 @@ window.quest = [
 
       // 長語（スペースなし）
       { display: "仮想環境", kana: "かそうかんきょう", romaji: ["kasoukankyou"] },
-      { display: "報告連絡相談", kana: "ほうこくれんらくそうだん", romaji: ["houkokurenrakusoudan"] }
+      { display: "報告連絡相談", kana: "ほうこくれんらくそうだん", romaji: ["houkokurenrakusoudan"] },
+
+      {
+  category: "日本語（文章）",
+  items: [
+    {
+      display: "今日はタイピングの練習をします",
+      kana: "きょうはたいぴんぐのれんしゅうをします",
+      romaji: ["kyouhataipingunorenshuuwoshimasu"]
+    },
+    {
+      display: "正しいキー入力を意識しましょう",
+      kana: "ただしいきーにゅうりょくをいしきしましょう",
+      romaji: ["tadashiikiinyuuryokuwoshikishimashou"]
+    },
+    {
+      display: "ミスを恐れずに入力してください",
+      kana: "みすをおそれずににゅうりょくしてください",
+      romaji: ["misuwoosorezuninyuuryokushitekudasai"]
+    },
+    {
+      display: "落ち着いて画面をよく見ましょう",
+      kana: "おちついてがめんをよくみましょう",
+      romaji: ["ochitsuitegamenwoyokumimashou"]
+    },
+    {
+      display: "タイピングは継続が大切です",
+      kana: "たいぴんぐはけいぞくがたいせつです",
+      romaji: ["taipinguhakeizokugataisetsudesu"]
+    },
+
+    {
+      display: "授業では基本操作を確認します",
+      kana: "じゅぎょうではきほんそうさをかくにんします",
+      romaji: ["jugyoudehakihonsousawokakuninshimasu"]
+    },
+    {
+      display: "プログラムは少しずつ理解しましょう",
+      kana: "ぷろぐらむはすこしずつりかいしましょう",
+      romaji: ["puroguramuhasukoshizutsurikaishimashou"]
+    },
+    {
+      display: "分からない時は質問してください",
+      kana: "わからないときはしつもんしてください",
+      romaji: ["wakaranaitokihashitsumonshitekudasai"]
+    },
+
+    {
+      display: "入力速度より正確さを重視します",
+      kana: "にゅうりょくそくどよりせいかくさをじゅうしします",
+      romaji: ["nyuuryokusokudoyoriseikakusawojyuushishimasu"]
+    },
+    {
+      display: "今日の内容は復習しておきましょう",
+      kana: "きょうのないようはふくしゅうしておきましょう",
+      romaji: ["kyounonaiyouhafukushuushiteokimashou"]
+    }
+  ]
+}
+
     ]
   }
 ];
@@ -57,4 +116,5 @@ window.mondailist = window.quest.map(cat => [
   cat.category,
   ...cat.items.map(q => q.kana)
 ]);
+
 
