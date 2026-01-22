@@ -1,0 +1,48 @@
+{
+  "新幹線": {
+    "kana": "しんかんせん",
+    "romaji": [
+      "shinkansenn",
+      "sinkansenn"
+    ],
+    "canonical": "shinkansenn"
+  },
+  "学校": {
+    "kana": "がっこう",
+    "romaji": [
+      "gakkou"
+    ],
+    "canonical": "gakkou"
+  },
+  "写真": {
+    "kana": "しゃしん",
+    "romaji": [
+      "shashinn",
+      "shasinn",
+      "syashinn",
+      "syasinn"
+    ],
+    "canonical": "shashinn"
+  },
+  "入力": {
+    "kana": "にゅうりょく",
+    "romaji": [
+      "nyuuryoku"
+    ],
+    "canonical": "nyuuryoku"
+  },
+  "猫": {
+    "kana": "ねこ",
+    "romaji": [
+      "neko"
+    ],
+    "canonical": "neko"
+  },
+  "翻訳": {
+    "kana": "ほんやく",
+    "romaji": [
+      "honnyaku"
+    ],
+    "canonical": "honnyaku"
+  }
+}
