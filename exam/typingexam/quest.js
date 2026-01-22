@@ -43,7 +43,7 @@ window.quest = [
       { display: "アームバンド", kana: "あーむばんど", romaji: ["a-mubando", "amubando"] },
       { display: "アールグレイ", kana: "あーるぐれい", romaji: ["a-rugurei", "arugurei"] },
       { display: "アイス", kana: "あいす", romaji: ["aisu"] },
-      { display: "アイスクリーム", kana: "あいすくりーむ", romaji: ["aisu-ku-ri-mu", "aisukuriimu"] },
+      { display: "アイスクリーム", kana: "あいすくりーむ", romaji: ["aisukuri-mu", "aisukuriimu"] },
 
       // 長語（スペースなし）
       { display: "仮想環境", kana: "かそうかんきょう", romaji: ["kasoukankyou"] },
@@ -57,3 +57,4 @@ window.mondailist = window.quest.map(cat => [
   cat.category,
   ...cat.items.map(q => q.kana)
 ]);
+
