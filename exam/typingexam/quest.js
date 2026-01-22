@@ -186,7 +186,11 @@ window.quest = [
           "kextuseki"]
       },
       { display: "成績", kana: "せいせき", romaji: ["seiseki"] },
+<<<<<<< HEAD
       { display: "単位", kana: "たんい", romaji: ["tanni"] },
+=======
+      { display: "単位", kana: "たんい", romaji: ["tani, "tanni""] },
+>>>>>>> da6f914e5368ee4eb87f55ef2e4c9b2afec80c6f
 
       // ===== 事務・手続 =====
       { display: "入学", kana: "にゅうがく", romaji: ["nyuugaku"] },
