@@ -47,8 +47,8 @@ window.quest = [
 
       // 長語（スペースなし）
       { display: "仮想環境", kana: "かそうかんきょう", romaji: ["kasoukankyou"] },
-      { display: "報告連絡相談", kana: "ほうこくれんらくそうだん", romaji: ["houkokurenrakusoudan"] },
-
+      { display: "報告連絡相談", kana: "ほうこくれんらくそうだん", romaji: ["houkokurenrakusoudan"] },]
+      },
       {
   category: "日本語（文章）",
   items: [
@@ -116,5 +116,6 @@ window.mondailist = window.quest.map(cat => [
   cat.category,
   ...cat.items.map(q => q.kana)
 ]);
+
 
 
