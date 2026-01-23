@@ -33,10 +33,16 @@ from typing import Dict, List, Set, Tuple
 
 @dataclass(frozen=True)
 class VariantOptions:
-    force_nn_at_end: bool = True
-    force_nn_before_vowel_y: bool = True
-    allow_xtu_ltu: bool = True   # ★追加
     max_variants: int = 4000
+
+    allow_xtu_ltu: bool = True         # っ: xtu/ltu を許可
+    allow_n_apostrophe: bool = True    # ん: n' を許可
+    allow_nn: bool = True              # ん: nn を許可
+
+    force_nn_at_end: bool = True       # 末尾 ん を nn に寄せる
+    force_nn_before_vowel_y: bool = True  # 母音/y の前の ん を nn に寄せる
+
+
 
 
 
@@ -263,7 +269,7 @@ def expand_tokens(tokens: List[Tuple[str, ...]], opt: VariantOptions) -> Set[str
 
             # 末尾
             if idx == len(tokens) - 1:
-                if opt.force_nn_at_end:
+                if opt.force_nn_at_end and opt.allow_nn:
                     dfs(idx + 1, built + ["nn"])
                 else:
                     dfs(idx + 1, built + ["n"])
@@ -272,7 +278,7 @@ def expand_tokens(tokens: List[Tuple[str, ...]], opt: VariantOptions) -> Set[str
             # 次が母音 or y：nn固定（な行/や行と混線しやすいところ）
             if next_firsts:
                 starts_vowel_or_y = any(_is_vowel_start(r) or _is_y_start(r) for r in next_firsts)
-                if starts_vowel_or_y and opt.force_nn_before_vowel_y:
+                if starts_vowel_or_y and opt.force_nn_before_vowel_y and opt.allow_nn:
                     dfs(idx + 1, built + ["nn"])
                     return
 
@@ -375,6 +381,10 @@ def dict_to_quest_array(d: Dict[str, Dict]) -> List[Dict]:
         })
     return out
 
+def dump_horizontal_array(arr, path: Path):
+    lines = ["  " + json.dumps(o, ensure_ascii=False, separators=(",", ":")) for o in arr]
+    path.write_text("[\n" + ",\n".join(lines) + "\n]\n", encoding="utf-8")
+
 
 
 def main():
@@ -391,6 +401,8 @@ def main():
     opt = VariantOptions(
         max_variants=args.max_variants,
         allow_xtu_ltu=not args.no_xtu,
+        allow_n_apostrophe=not args.no_n_apostrophe,
+        allow_nn=not args.no_nn,
     )
 
 
@@ -401,7 +413,7 @@ def main():
     d = build_dictionary(source_csv, overrides_csv, opt)
 
     quest = dict_to_quest_array(d)
-    out_json.write_text(json.dumps(quest, ensure_ascii=False, indent=2), encoding="utf-8")
+    dump_horizontal_array(quest, out_json)
     print(f"OK: wrote {out_json} ({len(quest)} entries)")
 
 
