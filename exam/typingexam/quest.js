@@ -134,134 +134,541 @@ window.quest = [
   {
     category: "日本語",
     items: [
-      // ===== あいさつ・基本 =====
-      { display: "おはよう", kana: "おはよう", romaji: ["ohayou"] },
-      { display: "こんにちは", kana: "こんにちは", romaji: ["konnichiha", "konnitiha", "konnnichiha", "konnnitiha"] },
-      { display: "こんばんは", kana: "こんばんは", romaji: ["konbanha", "konnbanha", "konbannha", "konnbannha"] },
-      { display: "ありがとう", kana: "ありがとう", romaji: ["arigatou"] },
-      { display: "よろしく", kana: "よろしく", romaji: ["yoroshiku", "yorosiku"] },
-
-      // ===== 学校・学生生活 =====
-      { display: "学校", kana: "がっこう", romaji: ["gakkou", "galtukou", "gaxtukou"] },
-      {
-        display: "専門学校", kana: "せんもんがっこう", romaji: [  // 基本
-          "senmongakkou",
-
-          // n 多打（せんもん）
-          "sennmongakkou",
-          "senmonngakkou",
-          "sennmonngakkou",
-
-          // 促音 ltu / xtu
-          "senmongaltukou",
-          "sennmongaltukou",
-          "senmongaxtukou",
-          "sennmongaxtukou",
-
-          // ★ 追加指定（n多打 × 促音）
-          "sennmonngaltukou",
-          "sennmonngaxtukou"]
-      },
-      { display: "授業", kana: "じゅぎょう", romaji: ["jugyou", "zyugyou"] },
-      { display: "学生", kana: "がくせい", romaji: ["gakusei"] },
-      { display: "先生", kana: "せんせい", romaji: ["sensei", "sennsei"] },
-      {
-        display: "時間割", kana: "じかんわり", romaji: ["jikanwari",
-          "jikannwari",
-          "zikanwari",   // 追加（訓令式）
-          "zikannwari"   // 追加（訓令式＋n多打）
-        ]
-      },
-      {
-        display: "出席", kana: "しゅっせき", romaji: ["shusseki",
-          "syusseki",
-          "shultuseki",  // ltu
-          "shuxtuseki",  // xtu
-          "syultuseki",  // ltu（訓令式）
-          "syuxtuseki"]
-      },
-      {
-        display: "欠席", kana: "けっせき", romaji: ["kesseki",
-          "keltuseki",
-          "kextuseki"]
-      },
-      { display: "成績", kana: "せいせき", romaji: ["seiseki"] },
-      { display: "単位", kana: "たんい", romaji: ["tani", "tanni"] },
-
-      // ===== 事務・手続 =====
-      { display: "入学", kana: "にゅうがく", romaji: ["nyuugaku"] },
-      {
-        display: "出願", kana: "しゅつがん", romaji: ["shutsugan",
-          "syutugan",   // 訓令式（shu→syu）
-          "shutsugann", // n多打（がん）
-          "syutugann"]
-      },
-      { display: "合格", kana: "ごうかく", romaji: ["goukaku"] },
-      { display: "受付", kana: "うけつけ", romaji: ["uketsuke"] },
-      {
-        display: "提出", kana: "ていしゅつ", romaji: ["teishutsu", // ヘボン・ヘボン
-          "teisyutu",   // 訓令・訓令
-          "teishutu",  // ヘボン・訓令
-          "teisyutsu"  // 訓令・ヘボン
-        ]
-      },
-      {
-        display: "確認", kana: "かくにん", romaji: ["kakunin","kakuninn"   // n多打
-        ]
-      },
-      { display: "完了", kana: "かんりょう", romaji: ["kanryou", "kannryou"] },
-
-      // ===== IT基礎 =====
-      { display: "パソコン", kana: "ぱそこん", romaji: ["pasokon", "pasokonn"] },
-      { display: "キーボード", kana: "きーぼーど", romaji: ["ki-bo-do"] },
-      { display: "マウス", kana: "まうす", romaji: ["mausu"] },
-      { display: "ディスプレイ", kana: "でぃすぷれい", romaji: ["disupurei", "dhisupurei"] },
-      { display: "インターネット", kana: "いんたーねっと", romaji: ["inta-netto", "inta-netxtu", "inta-netltu", "innta-netto", "innta-netxtu", "innta-netltu"] },
-      { display: "ログイン", kana: "ろぐいん", romaji: ["roguin", "roguinn"] },
-      { display: "ログアウト", kana: "ろぐあうと", romaji: ["roguauto"] },
-
-      // ===== プログラミング =====
-      { display: "プログラム", kana: "ぷろぐらむ", romaji: ["puroguramu"] },
-      { display: "ソースコード", kana: "そーすこーど", romaji: ["so-suko-do"] },
-      { display: "エラー", kana: "えらー", romaji: ["era-"] },
-      { display: "デバッグ", kana: "でばっぐ", romaji: ["debaggu"] },
-      { display: "変数", kana: "へんすう", romaji: ["hensuu","hennsuu"] },
-      { display: "関数", kana: "かんすう", romaji: ["kansuu", "kannsuu"] },
-      { display: "配列", kana: "はいれつ", romaji: ["hairetsu", "haireutu"] },
-      { display: "条件", kana: "じょうけん", romaji: ["jouken", "zyouken","joukenn", "zyoukenn"] },
-      { display: "処理", kana: "しょり", romaji: ["shori", "syori"] },
-
-      // ===== ネットワーク =====
-      { display: "サーバー", kana: "さーばー", romaji: ["sa-ba-"] },
-      { display: "ネットワーク", kana: "ねっとわーく", romaji: ["nettowa-ku"] },
-      { display: "通信", kana: "つうしん", romaji: ["tsuushin","tuushin","tsuusin","tuusin"] },
-      { display: "接続", kana: "せつぞく", romaji: ["setsuzoku","setuzoku"] },
-      { display: "設定", kana: "せってい", romaji: ["settei"] },
-
-      // ===== クラウド・OS =====
-      { display: "クラウド", kana: "くらうど", romaji: ["kuraudo"] },
-      { display: "仮想環境", kana: "かそうかんきょう", romaji: ["kasoukankyou","kasoukannkyou"] },
-
-      { display: "コマンド", kana: "こまんど", romaji: ["komando","komanndo"] },
-      { display: "ファイル", kana: "ふぁいる", romaji: ["fairu"] },
-      { display: "保存", kana: "ほぞん", romaji: ["hozon","hozonn"] },
-
-      // ===== 就職・社会 =====
-      { display: "就職", kana: "しゅうしょく", romaji: ["shuushoku","syuushoku","shuusyoku","syuusyoku"] },
-      { display: "履歴書", kana: "りれきしょ", romaji: ["rirekisho"] },
-      { display: "面接", kana: "めんせつ", romaji: ["mensetsu","mennsetsu","mensetu","mennsetu"] },
-      { display: "内定", kana: "ないてい", romaji: ["naitei"] },
-      { display: "社会人", kana: "しゃかいじん", romaji: ["shakaijinn","syakaijinn"] },
-
-      // ===== 作業・業務 =====
-      { display: "作業", kana: "さぎょう", romaji: ["sagyou"] },
-      { display: "開始", kana: "かいし", romaji: ["kaishi","kaisi"] },
-
-      { display: "修正", kana: "しゅうせい", romaji: ["shuusei","syuusei"] },
-      { display: "共有", kana: "きょうゆう", romaji: ["kyouyuu"] },
-      { display: "連絡", kana: "れんらく", romaji: ["renraku","rennraku"] },
-      { display: "確認中", kana: "かくにんちゅう", romaji: ["kakuninchuu","kakuninnchuu","kakunintyuu","kakuninntyuu"] },
-      { display: "対応中", kana: "たいおうちゅう", romaji: ["taiouchuu","taioucyuu","taioutyuu"] }
+     
+  {
+    "display": "新幹線",
+    "kana": "しんかんせん",
+    "romaji": [
+      "shinkansenn",
+      "sinkansenn"
+    ],
+    "canonical": "shinkansenn"
+  },
+  {
+    "display": "学校",
+    "kana": "がっこう",
+    "romaji": [
+      "gakkou"
+    ],
+    "canonical": "gakkou"
+  },
+  {
+    "display": "写真",
+    "kana": "しゃしん",
+    "romaji": [
+      "shashinn",
+      "shasinn",
+      "syashinn",
+      "syasinn"
+    ],
+    "canonical": "shashinn"
+  },
+  {
+    "display": "入力",
+    "kana": "にゅうりょく",
+    "romaji": [
+      "nyuuryoku"
+    ],
+    "canonical": "nyuuryoku"
+  },
+  {
+    "display": "猫",
+    "kana": "ねこ",
+    "romaji": [
+      "neko"
+    ],
+    "canonical": "neko"
+  },
+  {
+    "display": "翻訳",
+    "kana": "ほんやく",
+    "romaji": [
+      "honnyaku"
+    ],
+    "canonical": "honnyaku"
+  },
+  {
+    "display": "先生",
+    "kana": "せんせい",
+    "romaji": [
+      "sennsei",
+      "sensei"
+    ],
+    "canonical": "sennsei"
+  },
+  {
+    "display": "学生",
+    "kana": "がくせい",
+    "romaji": [
+      "gakusei"
+    ],
+    "canonical": "gakusei"
+  },
+  {
+    "display": "教室",
+    "kana": "きょうしつ",
+    "romaji": [
+      "kyoushitsu",
+      "kyoushitu",
+      "kyousitsu",
+      "kyousitu"
+    ],
+    "canonical": "kyoushitsu"
+  },
+  {
+    "display": "宿題",
+    "kana": "しゅくだい",
+    "romaji": [
+      "shukudai",
+      "syukudai"
+    ],
+    "canonical": "shukudai"
+  },
+  {
+    "display": "授業",
+    "kana": "じゅぎょう",
+    "romaji": [
+      "jugyou",
+      "jyugyou",
+      "zyugyou"
+    ],
+    "canonical": "jugyou"
+  },
+  {
+    "display": "試験",
+    "kana": "しけん",
+    "romaji": [
+      "shikenn",
+      "sikenn"
+    ],
+    "canonical": "shikenn"
+  },
+  {
+    "display": "休憩",
+    "kana": "きゅうけい",
+    "romaji": [
+      "kyuukei"
+    ],
+    "canonical": "kyuukei"
+  },
+  {
+    "display": "図書館",
+    "kana": "としょかん",
+    "romaji": [
+      "toshokann",
+      "tosyokann"
+    ],
+    "canonical": "toshokann"
+  },
+  {
+    "display": "昼食",
+    "kana": "ちゅうしょく",
+    "romaji": [
+      "chuushoku",
+      "chuusyoku",
+      "tyuushoku",
+      "tyuusyoku"
+    ],
+    "canonical": "chuushoku"
+  },
+  {
+    "display": "夕食",
+    "kana": "ゆうしょく",
+    "romaji": [
+      "yuushoku",
+      "yuusyoku"
+    ],
+    "canonical": "yuushoku"
+  },
+  {
+    "display": "天気",
+    "kana": "てんき",
+    "romaji": [
+      "tenki",
+      "tennki"
+    ],
+    "canonical": "tennki"
+  },
+  {
+    "display": "電車",
+    "kana": "でんしゃ",
+    "romaji": [
+      "dennsha",
+      "densha",
+      "densya"
+    ],
+    "canonical": "dennsha"
+  },
+  {
+    "display": "自転車",
+    "kana": "じてんしゃ",
+    "romaji": [
+      "jitennsha",
+      "jitensha",
+      "jitensya",
+      "zitensha",
+      "zitensya"
+    ],
+    "canonical": "jitennsha"
+  },
+  {
+    "display": "旅行",
+    "kana": "りょこう",
+    "romaji": [
+      "ryokou"
+    ],
+    "canonical": "ryokou"
+  },
+  {
+    "display": "散歩",
+    "kana": "さんぽ",
+    "romaji": [
+      "sannpo",
+      "sanpo"
+    ],
+    "canonical": "sannpo"
+  },
+  {
+    "display": "会議",
+    "kana": "かいぎ",
+    "romaji": [
+      "kaigi"
+    ],
+    "canonical": "kaigi"
+  },
+  {
+    "display": "連絡",
+    "kana": "れんらく",
+    "romaji": [
+      "rennraku",
+      "renraku"
+    ],
+    "canonical": "rennraku"
+  },
+  {
+    "display": "予定",
+    "kana": "よてい",
+    "romaji": [
+      "yotei"
+    ],
+    "canonical": "yotei"
+  },
+  {
+    "display": "時間",
+    "kana": "じかん",
+    "romaji": [
+      "jikann",
+      "zikann"
+    ],
+    "canonical": "jikann"
+  },
+  {
+    "display": "操作",
+    "kana": "そうさ",
+    "romaji": [
+      "sousa"
+    ],
+    "canonical": "sousa"
+  },
+  {
+    "display": "確認",
+    "kana": "かくにん",
+    "romaji": [
+      "kakuninn"
+    ],
+    "canonical": "kakuninn"
+  },
+  {
+    "display": "設定",
+    "kana": "せってい",
+    "romaji": [
+      "settei"
+    ],
+    "canonical": "settei"
+  },
+  {
+    "display": "削除",
+    "kana": "さくじょ",
+    "romaji": [
+      "sakujo",
+      "sakujyo",
+      "sakuzyo"
+    ],
+    "canonical": "sakujo"
+  },
+  {
+    "display": "保存",
+    "kana": "ほぞん",
+    "romaji": [
+      "hozonn"
+    ],
+    "canonical": "hozonn"
+  },
+  {
+    "display": "友達",
+    "kana": "ともだち",
+    "romaji": [
+      "tomodachi",
+      "tomodati"
+    ],
+    "canonical": "tomodachi"
+  },
+  {
+    "display": "家族",
+    "kana": "かぞく",
+    "romaji": [
+      "kazoku"
+    ],
+    "canonical": "kazoku"
+  },
+  {
+    "display": "朝食",
+    "kana": "ちょうしょく",
+    "romaji": [
+      "choushoku",
+      "chousyoku",
+      "tyoushoku",
+      "tyousyoku"
+    ],
+    "canonical": "choushoku"
+  },
+  {
+    "display": "夜",
+    "kana": "よる",
+    "romaji": [
+      "yoru"
+    ],
+    "canonical": "yoru"
+  },
+  {
+    "display": "今日",
+    "kana": "きょう",
+    "romaji": [
+      "kyou"
+    ],
+    "canonical": "kyou"
+  },
+  {
+    "display": "明日",
+    "kana": "あした",
+    "romaji": [
+      "ashita",
+      "asita"
+    ],
+    "canonical": "ashita"
+  },
+  {
+    "display": "昨日",
+    "kana": "きのう",
+    "romaji": [
+      "kinou"
+    ],
+    "canonical": "kinou"
+  },
+  {
+    "display": "仕事",
+    "kana": "しごと",
+    "romaji": [
+      "shigoto",
+      "sigoto"
+    ],
+    "canonical": "shigoto"
+  },
+  {
+    "display": "会社",
+    "kana": "かいしゃ",
+    "romaji": [
+      "kaisha",
+      "kaisya"
+    ],
+    "canonical": "kaisha"
+  },
+  {
+    "display": "会話",
+    "kana": "かいわ",
+    "romaji": [
+      "kaiwa"
+    ],
+    "canonical": "kaiwa"
+  },
+  {
+    "display": "問題",
+    "kana": "もんだい",
+    "romaji": [
+      "mondai",
+      "monndai"
+    ],
+    "canonical": "monndai"
+  },
+  {
+    "display": "解答",
+    "kana": "かいとう",
+    "romaji": [
+      "kaitou"
+    ],
+    "canonical": "kaitou"
+  },
+  {
+    "display": "説明",
+    "kana": "せつめい",
+    "romaji": [
+      "setsumei",
+      "setumei"
+    ],
+    "canonical": "setsumei"
+  },
+  {
+    "display": "理解",
+    "kana": "りかい",
+    "romaji": [
+      "rikai"
+    ],
+    "canonical": "rikai"
+  },
+  {
+    "display": "練習",
+    "kana": "れんしゅう",
+    "romaji": [
+      "rennshuu",
+      "renshuu",
+      "rensyuu"
+    ],
+    "canonical": "rennshuu"
+  },
+  {
+    "display": "上達",
+    "kana": "じょうたつ",
+    "romaji": [
+      "joutatsu",
+      "joutatu",
+      "jyoutatsu",
+      "jyoutatu",
+      "zyoutatsu",
+      "zyoutatu"
+    ],
+    "canonical": "joutatsu"
+  },
+  {
+    "display": "失敗",
+    "kana": "しっぱい",
+    "romaji": [
+      "shippai",
+      "sippai"
+    ],
+    "canonical": "shippai"
+  },
+  {
+    "display": "成功",
+    "kana": "せいこう",
+    "romaji": [
+      "seikou"
+    ],
+    "canonical": "seikou"
+  },
+  {
+    "display": "開始",
+    "kana": "かいし",
+    "romaji": [
+      "kaishi",
+      "kaisi"
+    ],
+    "canonical": "kaishi"
+  },
+  {
+    "display": "終了",
+    "kana": "しゅうりょう",
+    "romaji": [
+      "shuuryou",
+      "syuuryou"
+    ],
+    "canonical": "shuuryou"
+  },
+  {
+    "display": "準備",
+    "kana": "じゅんび",
+    "romaji": [
+      "junbi",
+      "junnbi",
+      "jyunbi",
+      "zyunbi"
+    ],
+    "canonical": "junnbi"
+  },
+  {
+    "display": "注意",
+    "kana": "ちゅうい",
+    "romaji": [
+      "chuui",
+      "tyuui"
+    ],
+    "canonical": "chuui"
+  },
+  {
+    "display": "確認作業",
+    "kana": "かくにんさぎょう",
+    "romaji": [
+      "kakuninnsagyou",
+      "kakuninsagyou"
+    ],
+    "canonical": "kakuninnsagyou"
+  },
+  {
+    "display": "操作方法",
+    "kana": "そうさほうほう",
+    "romaji": [
+      "sousahouhou"
+    ],
+    "canonical": "sousahouhou"
+  },
+  {
+    "display": "設定画面",
+    "kana": "せっていがめん",
+    "romaji": [
+      "setteigamenn"
+    ],
+    "canonical": "setteigamenn"
+  },
+  {
+    "display": "保存先",
+    "kana": "ほぞんさき",
+    "romaji": [
+      "hozonsaki"
+    ],
+    "canonical": "hozonsaki"
+  },
+  {
+    "display": "読み込み",
+    "kana": "よみこみ",
+    "romaji": [
+      "yomikomi"
+    ],
+    "canonical": "yomikomi"
+  },
+  {
+    "display": "書き込み",
+    "kana": "かきこみ",
+    "romaji": [
+      "kakikomi"
+    ],
+    "canonical": "kakikomi"
+  },
+  {
+    "display": "実行",
+    "kana": "じっこう",
+    "romaji": [
+      "jikkou",
+      "zikkou"
+    ],
+    "canonical": "jikkou"
+  },
+  {
+    "display": "結果",
+    "kana": "けっか",
+    "romaji": [
+      "kekka"
+    ],
+    "canonical": "kekka"
+  }
     ]
   }
 ];

@@ -35,6 +35,7 @@ from typing import Dict, List, Set, Tuple
 class VariantOptions:
     force_nn_at_end: bool = True
     force_nn_before_vowel_y: bool = True
+    allow_xtu_ltu: bool = True   # ★追加
     max_variants: int = 4000
 
 
@@ -359,6 +360,22 @@ def build_dictionary(source_csv: Path, overrides_csv: Path | None, opt: VariantO
 
     return data
 
+def dict_to_quest_array(d: Dict[str, Dict]) -> List[Dict]:
+    """
+    {"宿題": {"kana":..., "romaji":[...], "canonical":...}, ...}
+      -> [{"display":"宿題","kana":...,"romaji":[...],"canonical":...}, ...]
+    """
+    out: List[Dict] = []
+    for display, v in d.items():
+        out.append({
+            "display": display,
+            "kana": v["kana"],
+            "romaji": v["romaji"],
+            "canonical": v.get("canonical", (v["romaji"][0] if v.get("romaji") else "")),
+        })
+    return out
+
+
 
 def main():
     p = argparse.ArgumentParser(description="Typing dictionary builder with kana-based variant generator")
@@ -372,7 +389,8 @@ def main():
     args = p.parse_args()
 
     opt = VariantOptions(
-        max_variants=args.max_variants
+        max_variants=args.max_variants,
+        allow_xtu_ltu=not args.no_xtu,
     )
 
 
@@ -382,8 +400,10 @@ def main():
 
     d = build_dictionary(source_csv, overrides_csv, opt)
 
-    out_json.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"OK: wrote {out_json} ({len(d)} entries)")
+    quest = dict_to_quest_array(d)
+    out_json.write_text(json.dumps(quest, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"OK: wrote {out_json} ({len(quest)} entries)")
+
 
 
 if __name__ == "__main__":
