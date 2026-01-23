@@ -288,6 +288,13 @@
     font-size: 24px;
 }
 
+.candidates{
+  white-space: pre-wrap;
+  font-family: monospace;
+  margin-top: 6px;
+  opacity: 0.85;
+}
+
 /* 【スペースキーの表示】----------------------------------------------- */
 .dan5 {
     background-color: skyblue;

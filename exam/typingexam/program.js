@@ -45,7 +45,7 @@ let posi = [
 //問題の配列の先頭の文字を抜き出し、タイトルにするための配列を作る
 titleStr = [];
 for (i = 0; i < Math.min(window.quest.length, 10); i++) {
-  titleStr[i] = window.quest[i].category;
+    titleStr[i] = window.quest[i].category;
 }
 
 //ローマ字カナ対応表を1つの1次元配列で作り、それを2つの配列に分離している。
@@ -65,6 +65,39 @@ function isExactOk(buf, list) {
     return list.includes(buf);
 }
 
+function uniq(arr) {
+    return [...new Set(arr)];
+}
+
+function getFilteredCandidates(typed, list) {
+    if (!typed) return list;
+    return list.filter(ans => ans.startsWith(typed));
+}
+
+// 今の入力に最も自然な候補を選ぶ（短い順＝早く確定できるのが上）
+function chooseBestCandidate(typed, list) {
+    const filtered = getFilteredCandidates(typed, list);
+    if (filtered.length === 0) return null;
+    return filtered.slice().sort((a, b) => a.length - b.length)[0];
+}
+
+function renderCandidates(typed, list) {
+    const el = document.querySelector(".candidates");
+    if (!el) return;
+
+    const filtered = getFilteredCandidates(typed, list);
+    const show = filtered.length ? filtered : list; // 0件なら全候補に戻す派
+
+    el.textContent = show.join("\n");
+}
+
+function updateRemainingView() {
+    const best = chooseBestCandidate(buf, expectedList);
+    if (!best) return;
+
+    const rest = best.slice(buf.length);
+    document.querySelector(".inputBefore").textContent = rest;
+}
 
 
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
@@ -144,7 +177,7 @@ function missColor(key) {
 //⑥次のワードを表示
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 function centerMsgStr() {
-    
+
     const el = document.querySelector(".msgStr");
     const parent = el.parentElement;           // msgStrを囲ってる枠
     if (!parent) return;
@@ -159,6 +192,36 @@ function centerMsgStr() {
     el.style.width = elW + "px";               // 幅を固定（ズレ防止）
 }
 
+function initQuestionState(q) {
+    currentQ = q;
+
+    // 候補ローマ字（大文字化＋重複排除）
+    expectedList = uniq((currentQ.romaji || []).map(s => String(s).toUpperCase()));
+
+    // canonical を先頭に寄せる（存在する場合）
+    const canon = currentQ.canonical ? String(currentQ.canonical).toUpperCase() : null;
+    if (canon && expectedList.includes(canon)) {
+        expectedList = [canon, ...expectedList.filter(x => x !== canon)];
+    }
+
+    // 入力状態リセット
+    endWord = "";
+    document.querySelector(".inputAfter").textContent = endWord;
+
+    buf = "";
+    document.querySelector(".inputBuf").textContent = buf;
+
+    // 残り表示（初期は canonical/先頭候補を全部）
+    document.querySelector(".inputBefore").textContent = expectedList[0] || "";
+
+    // 候補一覧表示（全候補）
+    renderCandidates(buf, expectedList);
+
+    // キー表示をクリア
+    missFlg = false;
+    document.querySelector(".hit").style.display = "none";
+    document.querySelector(".miss").style.display = "none";
+}
 
 function NextWordView() {
     // tmpList が空なら補充（lessonNo が確定している前提）
@@ -166,35 +229,24 @@ function NextWordView() {
         tmpList = [...quest[lessonNo].items];
     }
 
+    let q = null;
+
     if (order) {
         // r が範囲外なら戻す
         if (r >= tmpList.length) r = 0;
 
-        const q = tmpList[r];
-        tmpWord = q.kana;
-        document.querySelector(".msgStr").textContent = q.display;
-        //centerMsgStr();
+        q = tmpList[r];
 
-        currentQ = q;
-        expectedList = (currentQ.romaji || []).map(s => String(s).toUpperCase());
-        modelAns = expectedList[0] || ""; // 表示用（暫定で先頭）
-
-
+        // 次のために進める
         r++;
         if (r >= tmpList.length) r = 0;
 
     } else {
         r = Math.floor(Math.random() * tmpList.length);
 
-        const q = tmpList[r];
-        tmpWord = q.kana;
-        document.querySelector(".msgStr").textContent = q.display;
+        q = tmpList[r];
 
-        currentQ = q;
-        expectedList = (currentQ.romaji || []).map(s => String(s).toUpperCase());
-        modelAns = expectedList[0] || ""; // 表示用（暫定で先頭）
-
-
+        // ランダムは出したら消す
         tmpList.splice(r, 1);
 
         // 次回のために枯渇したら補充
@@ -203,22 +255,15 @@ function NextWordView() {
         }
     }
 
-    // 表示系リセット（ここは元のままでOK）
-    endWord = "";
-    document.querySelector(".inputAfter").textContent = endWord;
-    buf = "";
-    document.querySelector(".inputBuf").textContent = buf;
-    preWord = modelAns;
-    document.querySelector(".inputBefore").textContent = preWord;
+    // 表示（問題文）
+    tmpWord = q.kana;
+    document.querySelector(".msgStr").textContent = q.display;
+    //centerMsgStr();
 
-
-        // キー表示をクリア
-    missFlg = false;
-    document.querySelector(".hit").style.display = "none";
-    document.querySelector(".miss").style.display = "none";
-    
-
+    // ここで「候補・入力状態・表示」を全部初期化
+    initQuestionState(q);
 }
+
 
 //■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 //⑦レッスンスタート
@@ -396,10 +441,9 @@ document.addEventListener('keydown', function (event) {
             // 表示：inputBefore を “残り” っぽく減らす（暫定：modelAnsの先頭から削る）
             // ※辞書の複数候補があるので、本当は「今一致している候補」を選ぶのが理想。
             //   でも最小変更ではまずこれでOK。
-            if (preWord && preWord.length > 0) {
-                preWord = preWord.slice(1);
-                document.querySelector(".inputBefore").textContent = preWord;
-            }
+            renderCandidates(buf, expectedList);
+            updateRemainingView();
+
 
             // 3) 完全一致したら 1問クリア
             if (isExactOk(buf, expectedList)) {
