@@ -228,7 +228,7 @@ window.quest = [
   {"display":"キャッシュ削除","kana":"きゃっしゅさくじょ","romaji":["kyasshusakujo","kyasshusakujyo","kyasshusakuzyo","kyassyusakujo","kyassyusakujyo","kyassyusakuzyo"],"canonical":"kyasshusakujo"},
   {"display":"セキュリティ更新","kana":"せきゅりてぃこうしん","romaji":["sekyuritelikoushinn","sekyuritelikousinn","sekyuritexikoushinn","sekyuritexikousinn","sekyurithikoushin"],"canonical":"sekyurithikoushin"},
   {"display":"開発環境","kana":"かいはつかんきょう","romaji":["kaihatsukankyou","kaihatsukannkyou","kaihatukankyou","kaihatukannkyou"],"canonical":"kaihatsukankyou"},
-  {"display":"実行確認","kana":"じっこうかくにん","romaji":["jikkoukakunin","jikkoukakuninn","zikkoukakuninn"],"canonical":"jikkoukakunin"},
+  {"display":"実行確認","kana":"じっこうかくにん","romaji":["jikkoukakunin","jikkoukakuninn","zikkoukakuninn"],"canonical":"jikkoukakuninn"},
   {"display":"構文エラー","kana":"こうぶんえらー","romaji":["koubunera-","koubunnera-"],"canonical":"koubunera-"},
   {"display":"論理エラー","kana":"ろんりえらー","romaji":["ronnriera-","ronriera-"],"canonical":"ronriera-"},
   {"display":"コメントアウト","kana":"こめんとあうと","romaji":["komenntoauto","komentoauto"],"canonical":"komentoauto"},
