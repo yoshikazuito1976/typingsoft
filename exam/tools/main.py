@@ -21,7 +21,6 @@ import argparse
 import csv
 import json
 from dataclasses import dataclass
-from itertools import product
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
@@ -36,12 +35,10 @@ class VariantOptions:
     max_variants: int = 4000
 
     allow_xtu_ltu: bool = True         # っ: xtu/ltu を許可
-    allow_n_apostrophe: bool = True    # ん: n' を許可
+   
     allow_nn: bool = True              # ん: nn を許可
 
-    force_nn_at_end: bool = True       # 末尾 ん を nn に寄せる
-    force_nn_before_vowel_y: bool = True  # 母音/y の前の ん を nn に寄せる
-
+  
 
 
 
@@ -68,7 +65,7 @@ BASE: Dict[str, Tuple[str, ...]] = {
     # r
     "ら": ("ra",), "り": ("ri",), "る": ("ru",), "れ": ("re",), "ろ": ("ro",),
     # w
-    "わ": ("wa",), "を": ("wo", "o"),
+    "わ": ("wa",), "を": ("wo",),
     # g
     "が": ("ga",), "ぎ": ("gi",), "ぐ": ("gu",), "げ": ("ge",), "ご": ("go",),
     # z/j
@@ -85,6 +82,7 @@ BASE: Dict[str, Tuple[str, ...]] = {
     "ゃ": ("xya", "lya",), "ゅ": ("xyu", "lyu",), "ょ": ("xyo", "lyo",),
     # others
     "ゔ": ("vu",),
+    "ー": ("-",),
 }
 
 # Digraphs (きゃ etc.) -> variants
@@ -256,9 +254,9 @@ def expand_tokens(tokens: List[Tuple[str, ...]], opt: VariantOptions) -> Set[str
                         dfs(idx + 1, built + [rep])
             return
 
+        
         # Nasal marker
         if cur_variants == ("__NASAL__",):
-            # 次に来るローマ字の先頭で判断（母音 or y のとき nn 固定にしたい）
             next_firsts: List[str] = []
             if idx + 1 < len(tokens):
                 nxt = tokens[idx + 1]
@@ -267,32 +265,40 @@ def expand_tokens(tokens: List[Tuple[str, ...]], opt: VariantOptions) -> Set[str
                 if nxt not in (("__SOKUON__",), ("__NASAL__",)) and not (nxt and nxt[0].startswith("__UNKNOWN__")):
                     next_firsts = list(nxt)
 
-            # 末尾
+            # 末尾は nn 固定
             if idx == len(tokens) - 1:
-                if opt.force_nn_at_end and opt.allow_nn:
+                if opt.allow_nn:
                     dfs(idx + 1, built + ["nn"])
                 else:
                     dfs(idx + 1, built + ["n"])
                 return
 
-            # 次が母音 or y：nn固定（な行/や行と混線しやすいところ）
+            # 次が母音 / y / な行（n始まり）のときは nn のみ（n は許さない）
             if next_firsts:
-                starts_vowel_or_y = any(_is_vowel_start(r) or _is_y_start(r) for r in next_firsts)
-                if starts_vowel_or_y and opt.force_nn_before_vowel_y and opt.allow_nn:
-                    dfs(idx + 1, built + ["nn"])
-                    return
+                starts_vowel_y_or_n = any(
+                    _is_vowel_start(r) or _is_y_start(r) or (r and r[0] == "n")
+                    for r in next_firsts
+                )
+                if starts_vowel_y_or_n:
+                    if opt.allow_nn:
+                        dfs(idx + 1, built + ["nn"])
+                        return
 
-            # それ以外（次が子音など）は通常の n
+            # それ以外（子音の前など）は n を許し、さらに nn も揺らぎとして許す
             dfs(idx + 1, built + ["n"])
+            if opt.allow_nn:
+                dfs(idx + 1, built + ["nn"])
             return
-
-
+        
         # Normal token: expand all variants
         for v in cur_variants:
             dfs(idx + 1, built + [v])
-
+        
     dfs(0, [])
     return results
+    
+       
+   
 
 
 def generate_variants_from_kana(kana: str, opt: VariantOptions) -> Set[str]:
@@ -394,14 +400,12 @@ def main():
     p.add_argument("--out", default="dictionary.json", help="output JSON path")
     p.add_argument("--max-variants", type=int, default=4000, help="safety cap for variants per entry")
     p.add_argument("--no-xtu", action="store_true", help="disable xtu/ltu variants for small っ")
-    p.add_argument("--no-n-apostrophe", action="store_true", help="disable n' variants for ん before vowels/y")
     p.add_argument("--no-nn", action="store_true", help="disable nn variants")
     args = p.parse_args()
 
     opt = VariantOptions(
         max_variants=args.max_variants,
         allow_xtu_ltu=not args.no_xtu,
-        allow_n_apostrophe=not args.no_n_apostrophe,
         allow_nn=not args.no_nn,
     )
 
